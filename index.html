@@ -1,357 +1,341 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darts Checkout Trainer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation; /* Prevents double-tap zoom on mobile */
+        }
+        .keypad-btn {
+            @apply flex items-center justify-center w-full h-14 text-xl font-semibold transition-transform duration-100 rounded-lg shadow-md active:scale-95 select-none;
+        }
+        .main-btn {
+            @apply flex items-center justify-center w-full h-14 text-base font-semibold text-gray-800 transition-transform duration-100 bg-gray-200 hover:bg-gray-300 rounded-lg shadow-md active:scale-95 select-none;
+        }
+    </style>
 </head>
-<body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Darts Checkout Trainer&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link rel="preconnect" href="https://fonts.googleapis.com"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Inter', sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>touch-action: manipulation; /* Prevents double-tap zoom on mobile */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.keypad-btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>@apply flex items-center justify-center w-full h-14 text-xl font-semibold transition-transform duration-100 rounded-lg shadow-md active:scale-95 select-none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.main-btn {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>@apply flex items-center justify-center w-full h-14 text-base font-semibold text-gray-800 transition-transform duration-100 bg-gray-200 hover:bg-gray-300 rounded-lg shadow-md active:scale-95 select-none;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body class="bg-gray-100 flex items-center justify-center min-h-screen"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="w-full max-w-sm mx-auto bg-white text-gray-800 rounded-2xl shadow-2xl p-4 space-y-3 border border-gray-300"&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Dart Score Displays --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-3 gap-2 text-center"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="text-sm text-gray-500"&gt;Dart 1&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="dart1-display" class="bg-gray-200 text-gray-900 rounded-lg p-3 text-2xl font-bold h-16 flex items-center justify-center"&gt;-&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="text-sm text-gray-500"&gt;Dart 2&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="dart2-display" class="bg-gray-200 text-gray-900 rounded-lg p-3 text-2xl font-bold h-16 flex items-center justify-center"&gt;-&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="text-sm text-gray-500"&gt;Dart 3&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="dart3-display" class="bg-gray-200 text-gray-900 rounded-lg p-3 text-2xl font-bold h-16 flex items-center justify-center"&gt;-&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Target Score Display --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-center bg-gray-100 rounded-lg p-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-sm text-gray-600"&gt;Target / Remaining&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="remaining-display" class="text-6xl font-bold text-green-600 tracking-tight"&gt;100&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Current Score Input --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="text-center bg-gray-100 rounded-lg p-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="text-sm text-gray-600"&gt;Enter Score&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="current-input-display" class="text-4xl font-bold text-black tracking-tight h-12 flex items-center justify-center"&gt;-&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Controls --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="grid grid-cols-3 gap-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="new-btn" class="main-btn"&gt;New&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="set-target-btn" class="main-btn"&gt;Set&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="hint-btn" class="main-btn"&gt;Hint&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="reset-btn" class="main-btn"&gt;Reset&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="undo-btn" class="main-btn col-span-2"&gt;Undo&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;!-- Keypad --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="space-y-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Presets --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-4 gap-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="60"&gt;T20&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="57"&gt;T19&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="54"&gt;T18&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="51"&gt;T17&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="48"&gt;T16&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="45"&gt;T15&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="30"&gt;T10&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="50"&gt;Bull&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Numpad --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-3 gap-2"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="1"&gt;1&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="2"&gt;2&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="3"&gt;3&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="4"&gt;4&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="5"&gt;5&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="6"&gt;6&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="7"&gt;7&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="8"&gt;8&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="9"&gt;9&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-gray-300 text-gray-800 hover:bg-gray-400" id="clear-input-btn"&gt;C&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="0"&gt;0&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;button class="keypad-btn bg-green-500 text-white hover:bg-green-600" id="submit-score-btn"&gt;SUBMIT&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">    </span></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Hint Modal --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="hint-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="bg-white rounded-lg shadow-xl p-6 text-center max-w-sm w-full border border-gray-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3 class="text-lg font-bold text-blue-600 mb-2"&gt;Recommended Checkout&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="text-2xl font-bold text-gray-800 mb-4" id="hint-text"&gt;T20, T19, D12&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button id="close-hint-btn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg w-full"&gt;Close&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Set Target Modal --&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="set-target-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="bg-white rounded-lg shadow-xl p-6 text-center max-w-sm w-full border border-gray-300"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;h3 class="text-lg font-bold text-gray-800 mb-4"&gt;Set Manual Target&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="number" id="target-input" class="w-full border border-gray-300 rounded-lg p-3 text-center text-2xl font-bold" placeholder="e.g., 121"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="grid grid-cols-2 gap-2 mt-4"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>&lt;button id="confirm-set-target-btn" class="main-btn bg-green-500 text-white hover:bg-green-600"&gt;Set&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                 </span>&lt;button id="cancel-set-target-btn" class="main-btn bg-gray-300 hover:bg-gray-400 text-gray-800"&gt;Cancel&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>// --- DOM ELEMENTS ---</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const remainingDisplay = document.getElementById('remaining-display');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const currentInputDisplay = document.getElementById('current-input-display');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const dartDisplays = [</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('dart1-display'),</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('dart2-display'),</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.getElementById('dart3-display')</p>
-<p class="p1"><span class="Apple-converted-space">            </span>];</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const newBtn = document.getElementById('new-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const hintBtn = document.getElementById('hint-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const resetBtn = document.getElementById('reset-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const undoBtn = document.getElementById('undo-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const scoreBtns = document.querySelectorAll('.score-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const numBtns = document.querySelectorAll('.num-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const clearInputBtn = document.getElementById('clear-input-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const submitScoreBtn = document.getElementById('submit-score-btn');</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Hint Modal</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const hintModal = document.getElementById('hint-modal');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const hintText = document.getElementById('hint-text');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const closeHintBtn = document.getElementById('close-hint-btn');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Set Target Modal</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const setTargetBtn = document.getElementById('set-target-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const setTargetModal = document.getElementById('set-target-modal');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const targetInput = document.getElementById('target-input');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const confirmSetTargetBtn = document.getElementById('confirm-set-target-btn');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const cancelSetTargetBtn = document.getElementById('cancel-set-target-btn');</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// --- STATE ---</p>
-<p class="p1"><span class="Apple-converted-space">            </span>let state = {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>target: 0,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>remaining: 0,</p>
-<p class="p1"><span class="Apple-converted-space">                </span>darts: [],</p>
-<p class="p1"><span class="Apple-converted-space">                </span>currentInput: '',</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// --- CHECKOUT DATA (Winmau Style) ---</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const checkouts = {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>170: "T20, T20, Bull", 167: "T20, T19, Bull", 164: "T20, T18, Bull", 161: "T20, T17, Bull", 160: "T20, T20, D20",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>158: "T20, T20, D19", 157: "T20, T19, D20", 156: "T20, T20, D18", 155: "T20, T19, D19", 154: "T20, T18, D20",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>153: "T20, T19, D18", 152: "T20, T20, D16", 151: "T20, T17, D20", 150: "T20, T18, D18", 149: "T20, T19, D16",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>148: "T20, T16, D20", 147: "T20, T17, D18", 146: "T20, T18, D16", 145: "T20, T15, D20", 144: "T20, T20, D12",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>143: "T20, T17, D16", 142: "T20, T14, D20", 141: "T20, T19, D12", 140: "T20, T20, D10", 139: "T20, T13, D20",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>138: "T20, T18, D12", 137: "T20, T19, D10", 136: "T20, T20, D8", 135: "T20, T15, D15", 134: "T20, T14, D16",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>133: "T20, T19, D8", 132: "T20, T16, D12", 131: "T20, T13, D16", 130: "T20, T20, D5", 129: "T19, T16, D12",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>128: "T18, T14, D16", 127: "T20, T17, D8", 126: "T19, T19, D6", 125: "Bull, T15, D20", 124: "T20, S16, D24",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>123: "T19, S16, D25", 122: "T18, S20, D24", 121: "T20, S11, Bull", 120: "T20, S20, D20", 119: "T19, S12, Bull",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>118: "T20, S18, D20", 117: "T20, S17, D20", 116: "T20, S16, D20", 115: "T20, S15, D20", 114: "T20, S14, D20",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>113: "T20, S13, D20", 112: "T20, S12, D20", 111: "T20, S11, D20", 110: "T20, S10, D20", 109: "T19, S12, D20",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>108: "T20, S8, D20", 107: "T19, S10, D20", 106: "T20, S6, D20", 105: "T20, S5, D20", 104: "T18, S10, D20",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>103: "T19, S6, D20", 102: "T20, S2, D20", 101: "T17, S10, D20", 100: "T20, D20", 99: "T19, D21", 98: "T20, D19",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>97: "T19, D20", 96: "T20, D18", 95: "T19, D19", 94: "T18, D20", 93: "T19, D18", 92: "T20, D16",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>91: "T17, D20", 90: "T20, D15", 89: "T19, D16", 88: "T20, D14", 87: "T17, D18", 86: "T18, D16",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>85: "T15, D20", 84: "T20, D12", 83: "T17, D16", 82: "T14, D20", 81: "T19, D12", 80: "T20, D10",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>79: "T13, D20", 78: "T18, D12", 77: "T19, D10", 76: "T20, D8", 75: "T17, D12", 74: "T14, D16",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>73: "T19, D8", 72: "T16, D12", 71: "T13, D16", 70: "T18, D8", 69: "T19, D6", 68: "T20, D4",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>67: "T17, D8", 66: "T10, D18", 65: "T19, D4", 64: "T16, D8", 63: "T13, D12", 62: "T10, D16",</p>
-<p class="p1"><span class="Apple-converted-space">                </span>61: "T15, D8",</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// --- FUNCTIONS ---</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const updateMainDisplay = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>remainingDisplay.textContent = state.remaining;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>dartDisplays.forEach((display, i) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>display.textContent = state.darts[i] !== undefined ? state.darts[i] : '-';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Clear all color classes first</p>
-<p class="p1"><span class="Apple-converted-space">                </span>remainingDisplay.classList.remove('text-red-600', 'text-green-600');</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (state.remaining === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>remainingDisplay.classList.add('text-green-600');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else if (state.remaining &lt; 0 || state.remaining === 1) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>remainingDisplay.classList.add('text-red-600');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>remainingDisplay.classList.add('text-green-600');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const updateInputDisplay = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>currentInputDisplay.textContent = state.currentInput || '-';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const clearInput = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.currentInput = '';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateInputDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const newCheckout = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.target = Math.floor(Math.random() * (99 - 61 + 1)) + 61;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.remaining = state.target;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.darts = [];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>clearInput();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateMainDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const setTarget = (newTarget) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.target = newTarget;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.remaining = state.target;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.darts = [];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>clearInput();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateMainDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const resetTurn = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.remaining = state.target;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.darts = [];</p>
-<p class="p1"><span class="Apple-converted-space">                </span>clearInput();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateMainDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const handleScoreInput = (score) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (state.darts.length &gt;= 3 || state.remaining &lt;= 1) return;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.darts.push(score);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.remaining -= score;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>clearInput();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateMainDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>checkGameState();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const checkGameState = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (state.remaining === 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>showToast("Checkout!", "success");</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>setTimeout(newCheckout, 1500);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else if (state.remaining &lt; 0 || state.remaining === 1) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>showToast("Bust!", "error");</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>setTimeout(resetTurn, 1500);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else if (state.darts.length === 3) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>showToast("Turn Over", "info");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const undoLastScore = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (state.darts.length &gt; 0) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const lastScore = state.darts.pop();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>state.remaining += lastScore;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>clearInput();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>updateMainDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const appendToInput = (digit) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (state.currentInput.length &gt;= 3) return;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const newScore = parseInt(state.currentInput + digit, 10);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (newScore &gt; 180) return; // Max score is 180</p>
-<p class="p1"><span class="Apple-converted-space">                </span>state.currentInput += digit;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>updateInputDisplay();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const submitInput = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const score = parseInt(state.currentInput, 10);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (!isNaN(score) &amp;&amp; score &gt;= 0) { // Also check for non-negative</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>handleScoreInput(score);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Modal Functions</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const showHint = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const hint = checkouts[state.remaining] || "No standard checkout";</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hintText.textContent = hint;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>hintModal.classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const closeHint = () =&gt; hintModal.classList.add('hidden');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const showSetTargetModal = () =&gt; setTargetModal.classList.remove('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const closeSetTargetModal = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>setTargetModal.classList.add('hidden');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>targetInput.value = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const handleSetTargetConfirm = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const newTargetValue = parseInt(targetInput.value, 10);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (!isNaN(newTargetValue) &amp;&amp; newTargetValue &gt; 1 &amp;&amp; newTargetValue &lt;= 170) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>setTarget(newTargetValue);</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>closeSetTargetModal();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>showToast("Invalid target (2-170)", "error");</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const showToast = (message, type = 'info') =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const toast = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>let bgColor = 'bg-gray-800';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (type === 'success') bgColor = 'bg-green-600';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (type === 'error') bgColor = 'bg-red-600';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>toast.className = `fixed bottom-5 right-1/2 translate-x-1/2 ${bgColor} text-white py-2 px-4 rounded-lg shadow-lg text-lg animate-pulse`;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>toast.textContent = message;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>document.body.appendChild(toast);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>setTimeout(() =&gt; toast.remove(), 1400);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// --- EVENT LISTENERS ---</p>
-<p class="p1"><span class="Apple-converted-space">            </span>newBtn.addEventListener('click', newCheckout);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>resetBtn.addEventListener('click', resetTurn);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>undoBtn.addEventListener('click', undoLastScore);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>hintBtn.addEventListener('click', showHint);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>closeHintBtn.addEventListener('click', closeHint);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>hintModal.addEventListener('click', (e) =&gt; e.target === hintModal &amp;&amp; closeHint());</p>
-<p class="p1"><span class="Apple-converted-space">            </span>clearInputBtn.addEventListener('click', clearInput);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>submitScoreBtn.addEventListener('click', submitInput);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>setTargetBtn.addEventListener('click', showSetTargetModal);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>cancelSetTargetBtn.addEventListener('click', closeSetTargetModal);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>setTargetModal.addEventListener('click', (e) =&gt; e.target === setTargetModal &amp;&amp; closeSetTargetModal());</p>
-<p class="p1"><span class="Apple-converted-space">            </span>confirmSetTargetBtn.addEventListener('click', handleSetTargetConfirm);</p>
-<p class="p2"><br></p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>scoreBtns.forEach(button =&gt; button.addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>handleScoreInput(parseInt(button.dataset.value, 10));</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}));</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>numBtns.forEach(button =&gt; button.addEventListener('click', () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>appendToInput(button.dataset.value);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// --- INITIALIZATION ---</p>
-<p class="p1"><span class="Apple-converted-space">            </span>newCheckout();</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-sm mx-auto bg-white text-gray-800 rounded-2xl shadow-2xl p-4 space-y-3 border border-gray-300">
+        
+        <!-- Dart Score Displays -->
+        <div class="grid grid-cols-3 gap-2 text-center">
+            <div>
+                <div class="text-sm text-gray-500">Dart 1</div>
+                <div id="dart1-display" class="bg-gray-200 text-gray-900 rounded-lg p-3 text-2xl font-bold h-16 flex items-center justify-center">-</div>
+            </div>
+            <div>
+                <div class="text-sm text-gray-500">Dart 2</div>
+                <div id="dart2-display" class="bg-gray-200 text-gray-900 rounded-lg p-3 text-2xl font-bold h-16 flex items-center justify-center">-</div>
+            </div>
+            <div>
+                <div class="text-sm text-gray-500">Dart 3</div>
+                <div id="dart3-display" class="bg-gray-200 text-gray-900 rounded-lg p-3 text-2xl font-bold h-16 flex items-center justify-center">-</div>
+            </div>
+        </div>
+
+        <!-- Target Score Display -->
+        <div class="text-center bg-gray-100 rounded-lg p-2">
+            <div class="text-sm text-gray-600">Target / Remaining</div>
+            <div id="remaining-display" class="text-6xl font-bold text-green-600 tracking-tight">100</div>
+        </div>
+
+        <!-- Current Score Input -->
+        <div class="text-center bg-gray-100 rounded-lg p-2">
+            <div class="text-sm text-gray-600">Enter Score</div>
+            <div id="current-input-display" class="text-4xl font-bold text-black tracking-tight h-12 flex items-center justify-center">-</div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="grid grid-cols-3 gap-2">
+            <button id="new-btn" class="main-btn">New</button>
+            <button id="set-target-btn" class="main-btn">Set</button>
+            <button id="hint-btn" class="main-btn">Hint</button>
+            <button id="reset-btn" class="main-btn">Reset</button>
+            <button id="undo-btn" class="main-btn col-span-2">Undo</button>
+        </div>
+
+        <!-- Keypad -->
+        <div class="space-y-2">
+            <!-- Presets -->
+            <div class="grid grid-cols-4 gap-2">
+                <button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="60">T20</button>
+                <button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="57">T19</button>
+                <button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="54">T18</button>
+                <button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="51">T17</button>
+                <button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="48">T16</button>
+                <button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="45">T15</button>
+                <button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="30">T10</button>
+                <button class="keypad-btn bg-red-200 text-red-900 hover:bg-red-300 score-btn" data-value="50">Bull</button>
+            </div>
+            <!-- Numpad -->
+            <div class="grid grid-cols-3 gap-2">
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="1">1</button>
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="2">2</button>
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="3">3</button>
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="4">4</button>
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="5">5</button>
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="6">6</button>
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="7">7</button>
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="8">8</button>
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="9">9</button>
+                <button class="keypad-btn bg-gray-300 text-gray-800 hover:bg-gray-400" id="clear-input-btn">C</button>
+                <button class="keypad-btn bg-green-200 text-green-900 hover:bg-green-300 num-btn" data-value="0">0</button>
+                <button class="keypad-btn bg-green-500 text-white hover:bg-green-600" id="submit-score-btn">SUBMIT</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Hint Modal -->
+    <div id="hint-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 text-center max-w-sm w-full border border-gray-300">
+            <h3 class="text-lg font-bold text-blue-600 mb-2">Recommended Checkout</h3>
+            <p class="text-2xl font-bold text-gray-800 mb-4" id="hint-text">T20, T19, D12</p>
+            <button id="close-hint-btn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg w-full">Close</button>
+        </div>
+    </div>
+
+    <!-- Set Target Modal -->
+    <div id="set-target-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-6 text-center max-w-sm w-full border border-gray-300">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Set Manual Target</h3>
+            <input type="number" id="target-input" class="w-full border border-gray-300 rounded-lg p-3 text-center text-2xl font-bold" placeholder="e.g., 121">
+            <div class="grid grid-cols-2 gap-2 mt-4">
+                 <button id="confirm-set-target-btn" class="main-btn bg-green-500 text-white hover:bg-green-600">Set</button>
+                 <button id="cancel-set-target-btn" class="main-btn bg-gray-300 hover:bg-gray-400 text-gray-800">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM ELEMENTS ---
+            const remainingDisplay = document.getElementById('remaining-display');
+            const currentInputDisplay = document.getElementById('current-input-display');
+            const dartDisplays = [
+                document.getElementById('dart1-display'),
+                document.getElementById('dart2-display'),
+                document.getElementById('dart3-display')
+            ];
+            const newBtn = document.getElementById('new-btn');
+            const hintBtn = document.getElementById('hint-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const undoBtn = document.getElementById('undo-btn');
+            const scoreBtns = document.querySelectorAll('.score-btn');
+            const numBtns = document.querySelectorAll('.num-btn');
+            const clearInputBtn = document.getElementById('clear-input-btn');
+            const submitScoreBtn = document.getElementById('submit-score-btn');
+            
+            // Hint Modal
+            const hintModal = document.getElementById('hint-modal');
+            const hintText = document.getElementById('hint-text');
+            const closeHintBtn = document.getElementById('close-hint-btn');
+
+            // Set Target Modal
+            const setTargetBtn = document.getElementById('set-target-btn');
+            const setTargetModal = document.getElementById('set-target-modal');
+            const targetInput = document.getElementById('target-input');
+            const confirmSetTargetBtn = document.getElementById('confirm-set-target-btn');
+            const cancelSetTargetBtn = document.getElementById('cancel-set-target-btn');
+
+
+            // --- STATE ---
+            let state = {
+                target: 0,
+                remaining: 0,
+                darts: [],
+                currentInput: '',
+            };
+
+            // --- CHECKOUT DATA (Winmau Style) ---
+            const checkouts = {
+                170: "T20, T20, Bull", 167: "T20, T19, Bull", 164: "T20, T18, Bull", 161: "T20, T17, Bull", 160: "T20, T20, D20",
+                158: "T20, T20, D19", 157: "T20, T19, D20", 156: "T20, T20, D18", 155: "T20, T19, D19", 154: "T20, T18, D20",
+                153: "T20, T19, D18", 152: "T20, T20, D16", 151: "T20, T17, D20", 150: "T20, T18, D18", 149: "T20, T19, D16",
+                148: "T20, T16, D20", 147: "T20, T17, D18", 146: "T20, T18, D16", 145: "T20, T15, D20", 144: "T20, T20, D12",
+                143: "T20, T17, D16", 142: "T20, T14, D20", 141: "T20, T19, D12", 140: "T20, T20, D10", 139: "T20, T13, D20",
+                138: "T20, T18, D12", 137: "T20, T19, D10", 136: "T20, T20, D8", 135: "T20, T15, D15", 134: "T20, T14, D16",
+                133: "T20, T19, D8", 132: "T20, T16, D12", 131: "T20, T13, D16", 130: "T20, T20, D5", 129: "T19, T16, D12",
+                128: "T18, T14, D16", 127: "T20, T17, D8", 126: "T19, T19, D6", 125: "Bull, T15, D20", 124: "T20, S16, D24",
+                123: "T19, S16, D25", 122: "T18, S20, D24", 121: "T20, S11, Bull", 120: "T20, S20, D20", 119: "T19, S12, Bull",
+                118: "T20, S18, D20", 117: "T20, S17, D20", 116: "T20, S16, D20", 115: "T20, S15, D20", 114: "T20, S14, D20",
+                113: "T20, S13, D20", 112: "T20, S12, D20", 111: "T20, S11, D20", 110: "T20, S10, D20", 109: "T19, S12, D20",
+                108: "T20, S8, D20", 107: "T19, S10, D20", 106: "T20, S6, D20", 105: "T20, S5, D20", 104: "T18, S10, D20",
+                103: "T19, S6, D20", 102: "T20, S2, D20", 101: "T17, S10, D20", 100: "T20, D20", 99: "T19, D21", 98: "T20, D19",
+                97: "T19, D20", 96: "T20, D18", 95: "T19, D19", 94: "T18, D20", 93: "T19, D18", 92: "T20, D16",
+                91: "T17, D20", 90: "T20, D15", 89: "T19, D16", 88: "T20, D14", 87: "T17, D18", 86: "T18, D16",
+                85: "T15, D20", 84: "T20, D12", 83: "T17, D16", 82: "T14, D20", 81: "T19, D12", 80: "T20, D10",
+                79: "T13, D20", 78: "T18, D12", 77: "T19, D10", 76: "T20, D8", 75: "T17, D12", 74: "T14, D16",
+                73: "T19, D8", 72: "T16, D12", 71: "T13, D16", 70: "T18, D8", 69: "T19, D6", 68: "T20, D4",
+                67: "T17, D8", 66: "T10, D18", 65: "T19, D4", 64: "T16, D8", 63: "T13, D12", 62: "T10, D16",
+                61: "T15, D8",
+            };
+
+            // --- FUNCTIONS ---
+            const updateMainDisplay = () => {
+                remainingDisplay.textContent = state.remaining;
+                dartDisplays.forEach((display, i) => {
+                    display.textContent = state.darts[i] !== undefined ? state.darts[i] : '-';
+                });
+                // Clear all color classes first
+                remainingDisplay.classList.remove('text-red-600', 'text-green-600');
+                
+                if (state.remaining === 0) {
+                    remainingDisplay.classList.add('text-green-600');
+                } else if (state.remaining < 0 || state.remaining === 1) {
+                    remainingDisplay.classList.add('text-red-600');
+                } else {
+                    remainingDisplay.classList.add('text-green-600');
+                }
+            };
+
+            const updateInputDisplay = () => {
+                currentInputDisplay.textContent = state.currentInput || '-';
+            };
+
+            const clearInput = () => {
+                state.currentInput = '';
+                updateInputDisplay();
+            };
+            
+            const newCheckout = () => {
+                state.target = Math.floor(Math.random() * (99 - 61 + 1)) + 61;
+                state.remaining = state.target;
+                state.darts = [];
+                clearInput();
+                updateMainDisplay();
+            };
+
+            const setTarget = (newTarget) => {
+                state.target = newTarget;
+                state.remaining = state.target;
+                state.darts = [];
+                clearInput();
+                updateMainDisplay();
+            };
+
+            const resetTurn = () => {
+                state.remaining = state.target;
+                state.darts = [];
+                clearInput();
+                updateMainDisplay();
+            };
+
+            const handleScoreInput = (score) => {
+                if (state.darts.length >= 3 || state.remaining <= 1) return;
+
+                state.darts.push(score);
+                state.remaining -= score;
+                clearInput();
+                updateMainDisplay();
+                checkGameState();
+            };
+
+            const checkGameState = () => {
+                if (state.remaining === 0) {
+                    showToast("Checkout!", "success");
+                    setTimeout(newCheckout, 1500);
+                } else if (state.remaining < 0 || state.remaining === 1) {
+                    showToast("Bust!", "error");
+                    setTimeout(resetTurn, 1500);
+                } else if (state.darts.length === 3) {
+                    showToast("Turn Over", "info");
+                }
+            };
+            
+            const undoLastScore = () => {
+                if (state.darts.length > 0) {
+                    const lastScore = state.darts.pop();
+                    state.remaining += lastScore;
+                    clearInput();
+                    updateMainDisplay();
+                }
+            };
+
+            const appendToInput = (digit) => {
+                if (state.currentInput.length >= 3) return;
+                const newScore = parseInt(state.currentInput + digit, 10);
+                if (newScore > 180) return; // Max score is 180
+                state.currentInput += digit;
+                updateInputDisplay();
+            };
+            
+            const submitInput = () => {
+                const score = parseInt(state.currentInput, 10);
+                if (!isNaN(score) && score >= 0) { // Also check for non-negative
+                    handleScoreInput(score);
+                }
+            };
+
+            // Modal Functions
+            const showHint = () => {
+                const hint = checkouts[state.remaining] || "No standard checkout";
+                hintText.textContent = hint;
+                hintModal.classList.remove('hidden');
+            };
+            const closeHint = () => hintModal.classList.add('hidden');
+
+            const showSetTargetModal = () => setTargetModal.classList.remove('hidden');
+            const closeSetTargetModal = () => {
+                setTargetModal.classList.add('hidden');
+                targetInput.value = '';
+            }
+
+            const handleSetTargetConfirm = () => {
+                const newTargetValue = parseInt(targetInput.value, 10);
+                if (!isNaN(newTargetValue) && newTargetValue > 1 && newTargetValue <= 170) {
+                    setTarget(newTargetValue);
+                    closeSetTargetModal();
+                } else {
+                    showToast("Invalid target (2-170)", "error");
+                }
+            };
+            
+            const showToast = (message, type = 'info') => {
+                const toast = document.createElement('div');
+                let bgColor = 'bg-gray-800';
+                if (type === 'success') bgColor = 'bg-green-600';
+                if (type === 'error') bgColor = 'bg-red-600';
+
+                toast.className = `fixed bottom-5 right-1/2 translate-x-1/2 ${bgColor} text-white py-2 px-4 rounded-lg shadow-lg text-lg animate-pulse`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 1400);
+            };
+
+            // --- EVENT LISTENERS ---
+            newBtn.addEventListener('click', newCheckout);
+            resetBtn.addEventListener('click', resetTurn);
+            undoBtn.addEventListener('click', undoLastScore);
+            hintBtn.addEventListener('click', showHint);
+            closeHintBtn.addEventListener('click', closeHint);
+            hintModal.addEventListener('click', (e) => e.target === hintModal && closeHint());
+            clearInputBtn.addEventListener('click', clearInput);
+            submitScoreBtn.addEventListener('click', submitInput);
+
+            setTargetBtn.addEventListener('click', showSetTargetModal);
+            cancelSetTargetBtn.addEventListener('click', closeSetTargetModal);
+            setTargetModal.addEventListener('click', (e) => e.target === setTargetModal && closeSetTargetModal());
+            confirmSetTargetBtn.addEventListener('click', handleSetTargetConfirm);
+
+
+            scoreBtns.forEach(button => button.addEventListener('click', () => {
+                handleScoreInput(parseInt(button.dataset.value, 10));
+            }));
+            
+            numBtns.forEach(button => button.addEventListener('click', () => {
+                appendToInput(button.dataset.value);
+            }));
+
+            // --- INITIALIZATION ---
+            newCheckout();
+        });
+    </script>
 </body>
 </html>
