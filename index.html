@@ -19,6 +19,13 @@
         .main-btn {
             @apply flex items-center justify-center w-full h-14 text-base font-semibold text-gray-800 transition-transform duration-100 bg-gray-200 hover:bg-gray-300 rounded-lg shadow-md active:scale-95 select-none;
         }
+        .board-segment {
+            cursor: pointer;
+            transition: opacity 0.1s ease;
+        }
+        .board-segment:hover {
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -50,6 +57,12 @@
         <div class="text-center bg-gray-100 rounded-lg p-2">
             <div class="text-sm text-gray-600">Enter Score</div>
             <div id="current-input-display" class="text-4xl font-bold text-black tracking-tight h-12 flex items-center justify-center">-</div>
+        </div>
+
+        <!-- Interactive Dartboard -->
+        <div class="bg-gray-100 rounded-lg p-2">
+            <div class="text-sm text-gray-600 text-center mb-2">Tap Dartboard</div>
+            <div id="dartboard-wrapper" class="w-full flex justify-center"></div>
         </div>
         
         <!-- Controls -->
@@ -131,6 +144,7 @@
             const numBtns = document.querySelectorAll('.num-btn');
             const clearInputBtn = document.getElementById('clear-input-btn');
             const submitScoreBtn = document.getElementById('submit-score-btn');
+            const dartboardWrapper = document.getElementById('dartboard-wrapper');
             
             // Hint Modal
             const hintModal = document.getElementById('hint-modal');
@@ -309,6 +323,134 @@
                 setTimeout(() => toast.remove(), 1400);
             };
 
+            const polarToCartesian = (cx, cy, r, angleDeg) => {
+                const angleRad = (angleDeg - 90) * Math.PI / 180;
+                return {
+                    x: cx + r * Math.cos(angleRad),
+                    y: cy + r * Math.sin(angleRad),
+                };
+            };
+
+            const createRingWedgePath = (cx, cy, rInner, rOuter, startDeg, endDeg) => {
+                const p1 = polarToCartesian(cx, cy, rOuter, startDeg);
+                const p2 = polarToCartesian(cx, cy, rOuter, endDeg);
+                const p3 = polarToCartesian(cx, cy, rInner, endDeg);
+                const p4 = polarToCartesian(cx, cy, rInner, startDeg);
+                return [
+                    `M ${p1.x} ${p1.y}`,
+                    `A ${rOuter} ${rOuter} 0 0 1 ${p2.x} ${p2.y}`,
+                    `L ${p3.x} ${p3.y}`,
+                    `A ${rInner} ${rInner} 0 0 0 ${p4.x} ${p4.y}`,
+                    'Z'
+                ].join(' ');
+            };
+
+            const createDartboard = () => {
+                const numbersClockwise = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
+                const colorDark = '#111827';
+                const colorLight = '#f3f4f6';
+                const colorRed = '#dc2626';
+                const colorGreen = '#16a34a';
+                const segmentAngle = 18;
+                const startCenter = -9;
+                const ns = 'http://www.w3.org/2000/svg';
+
+                const svg = document.createElementNS(ns, 'svg');
+                svg.setAttribute('viewBox', '0 0 420 420');
+                svg.setAttribute('class', 'w-full max-w-[320px] h-auto');
+
+                const cx = 210;
+                const cy = 210;
+                const rDoubleOuter = 195;
+                const rDoubleInner = 175;
+                const rTripleOuter = 118;
+                const rTripleInner = 98;
+                const rOuterSingle = rDoubleInner;
+                const rInnerSingle = rTripleOuter;
+                const rBullOuter = 28;
+                const rBullInner = 12;
+
+                const bg = document.createElementNS(ns, 'circle');
+                bg.setAttribute('cx', cx);
+                bg.setAttribute('cy', cy);
+                bg.setAttribute('r', rDoubleOuter + 8);
+                bg.setAttribute('fill', '#d1d5db');
+                svg.appendChild(bg);
+
+                numbersClockwise.forEach((num, i) => {
+                    const start = startCenter + (i * segmentAngle);
+                    const end = start + segmentAngle;
+                    const isEven = i % 2 === 0;
+
+                    const singleOuterPath = document.createElementNS(ns, 'path');
+                    singleOuterPath.setAttribute('d', createRingWedgePath(cx, cy, rInnerSingle, rOuterSingle, start, end));
+                    singleOuterPath.setAttribute('fill', isEven ? colorDark : colorLight);
+                    singleOuterPath.setAttribute('class', 'board-segment');
+                    singleOuterPath.dataset.score = String(num);
+                    svg.appendChild(singleOuterPath);
+
+                    const triplePath = document.createElementNS(ns, 'path');
+                    triplePath.setAttribute('d', createRingWedgePath(cx, cy, rTripleInner, rTripleOuter, start, end));
+                    triplePath.setAttribute('fill', isEven ? colorRed : colorGreen);
+                    triplePath.setAttribute('class', 'board-segment');
+                    triplePath.dataset.score = String(num * 3);
+                    svg.appendChild(triplePath);
+
+                    const singleInnerPath = document.createElementNS(ns, 'path');
+                    singleInnerPath.setAttribute('d', createRingWedgePath(cx, cy, rBullOuter, rTripleInner, start, end));
+                    singleInnerPath.setAttribute('fill', isEven ? colorLight : colorDark);
+                    singleInnerPath.setAttribute('class', 'board-segment');
+                    singleInnerPath.dataset.score = String(num);
+                    svg.appendChild(singleInnerPath);
+
+                    const doublePath = document.createElementNS(ns, 'path');
+                    doublePath.setAttribute('d', createRingWedgePath(cx, cy, rDoubleInner, rDoubleOuter, start, end));
+                    doublePath.setAttribute('fill', isEven ? colorGreen : colorRed);
+                    doublePath.setAttribute('class', 'board-segment');
+                    doublePath.dataset.score = String(num * 2);
+                    svg.appendChild(doublePath);
+
+                    const textAngle = start + (segmentAngle / 2);
+                    const labelPos = polarToCartesian(cx, cy, rDoubleOuter + 15, textAngle);
+                    const label = document.createElementNS(ns, 'text');
+                    label.setAttribute('x', labelPos.x);
+                    label.setAttribute('y', labelPos.y);
+                    label.setAttribute('text-anchor', 'middle');
+                    label.setAttribute('dominant-baseline', 'middle');
+                    label.setAttribute('font-size', '14');
+                    label.setAttribute('font-weight', '700');
+                    label.setAttribute('fill', '#111827');
+                    label.textContent = String(num);
+                    svg.appendChild(label);
+                });
+
+                const bullOuter = document.createElementNS(ns, 'circle');
+                bullOuter.setAttribute('cx', cx);
+                bullOuter.setAttribute('cy', cy);
+                bullOuter.setAttribute('r', rBullOuter);
+                bullOuter.setAttribute('fill', colorGreen);
+                bullOuter.setAttribute('class', 'board-segment');
+                bullOuter.dataset.score = '25';
+                svg.appendChild(bullOuter);
+
+                const bullInner = document.createElementNS(ns, 'circle');
+                bullInner.setAttribute('cx', cx);
+                bullInner.setAttribute('cy', cy);
+                bullInner.setAttribute('r', rBullInner);
+                bullInner.setAttribute('fill', colorRed);
+                bullInner.setAttribute('class', 'board-segment');
+                bullInner.dataset.score = '50';
+                svg.appendChild(bullInner);
+
+                svg.addEventListener('click', (e) => {
+                    const score = parseInt(e.target.dataset.score, 10);
+                    if (!isNaN(score)) handleScoreInput(score);
+                });
+
+                dartboardWrapper.innerHTML = '';
+                dartboardWrapper.appendChild(svg);
+            };
+
             // --- EVENT LISTENERS ---
             newBtn.addEventListener('click', newCheckout);
             resetBtn.addEventListener('click', resetTurn);
@@ -334,6 +476,7 @@
             }));
 
             // --- INITIALIZATION ---
+            createDartboard();
             newCheckout();
         });
     </script>
