@@ -1,13 +1,420 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#09090b" />
-    <title>Dartboard Calculator</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#09090b" />
+  <title>Dartboard Calculator</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      background: #09090b;
+      color: white;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overscroll-behavior: none;
+    }
+    button, input, select { font: inherit; }
+    .app-shell {
+      min-height: 100dvh;
+      padding: max(4px, env(safe-area-inset-top)) 4px max(4px, env(safe-area-inset-bottom));
+      overflow: hidden;
+      background: #09090b;
+    }
+    .phone-layout {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .controls {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 72px 1fr 44px;
+      gap: 8px;
+      align-items: end;
+      padding: 8px;
+      border: 1px solid #27272a;
+      border-radius: 14px;
+      background: rgba(24, 24, 27, 0.96);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(8px);
+    }
+    .field { min-width: 0; }
+    .field label {
+      display: block;
+      margin: 0 0 3px;
+      color: #d4d4d8;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .field input, .field select {
+      width: 100%;
+      height: 36px;
+      border: 1px solid #3f3f46;
+      border-radius: 10px;
+      background: #09090b;
+      color: white;
+      outline: none;
+    }
+    .field input {
+      padding: 0 6px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    .field select {
+      padding: 0 8px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+    .random-button {
+      width: 44px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 0;
+      border-radius: 10px;
+      background: white;
+      color: #09090b;
+      font-size: 20px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .random-button:active { transform: translateY(1px); }
+    .board-section {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .board-wrap { width: 100%; max-width: none; margin: 0 auto; }
+    .dartboard {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: calc(100dvh - 64px);
+      border-radius: 14px;
+      background: black;
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
+      touch-action: manipulation;
+      user-select: none;
+    }
+    .segment:active { opacity: 0.85; }
+    @media (min-width: 700px) {
+      .phone-layout { max-width: 640px; }
+      .controls { grid-template-columns: 90px 1fr 54px; }
+      .random-button { width: 54px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <div class="phone-layout">
+      <header class="controls">
+        <div class="field">
+          <label for="score">Score</label>
+          <input id="score" inputmode="numeric" value="62" />
+        </div>
+        <div class="field">
+          <label for="range">Range</label>
+          <select id="range"></select>
+        </div>
+        <button id="random" class="random-button" aria-label="Choose random target">↻</button>
+      </header>
+      <section class="board-section">
+        <div class="board-wrap" id="boardWrap"></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const BOARD_ORDER = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
+    const TARGET_RANGES = [
+      { label: "41-50", min: 41, max: 50 },
+      { label: "51-60", min: 51, max: 60 },
+      { label: "61-70", min: 61, max: 70 },
+      { label: "71-80", min: 71, max: 80 },
+      { label: "81-90", min: 81, max: 90 },
+      { label: "91-100", min: 91, max: 100 },
+      { label: "101-110", min: 101, max: 110 },
+      { label: "111-120", min: 111, max: 120 },
+      { label: "121-130", min: 121, max: 130 },
+      { label: "131-140", min: 131, max: 140 },
+      { label: "141-150", min: 141, max: 150 },
+      { label: "151-170", min: 151, max: 170 }
+    ];
+    const COLOURS = {
+      background: "#050505",
+      wire: "#8b8b8b",
+      white: "#f4ebcf",
+      black: "#181818",
+      red: "#c93625",
+      green: "#3d9951",
+      textLight: "#ffffff",
+      textDark: "#202020",
+      checkout: "#7CFF84",
+      checkoutStroke: "#063b16"
+    };
+
+    const scoreInput = document.getElementById("score");
+    const rangeSelect = document.getElementById("range");
+    const randomButton = document.getElementById("random");
+    const boardWrap = document.getElementById("boardWrap");
+
+    TARGET_RANGES.forEach((range) => {
+      const option = document.createElement("option");
+      option.value = range.label;
+      option.textContent = range.label;
+      if (range.label === "61-70") option.selected = true;
+      rangeSelect.appendChild(option);
+    });
+
+    function polarToCartesian(cx, cy, r, angleDeg) {
+      const angleRad = ((angleDeg - 90) * Math.PI) / 180;
+      return {
+        x: cx + r * Math.cos(angleRad),
+        y: cy + r * Math.sin(angleRad)
+      };
+    }
+
+    function annularSectorPath(cx, cy, innerR, outerR, startAngle, endAngle) {
+      const outerStart = polarToCartesian(cx, cy, outerR, endAngle);
+      const outerEnd = polarToCartesian(cx, cy, outerR, startAngle);
+      const innerStart = polarToCartesian(cx, cy, innerR, startAngle);
+      const innerEnd = polarToCartesian(cx, cy, innerR, endAngle);
+      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+      return [
+        `M ${outerStart.x} ${outerStart.y}`,
+        `A ${outerR} ${outerR} 0 ${largeArcFlag} 0 ${outerEnd.x} ${outerEnd.y}`,
+        `L ${innerStart.x} ${innerStart.y}`,
+        `A ${innerR} ${innerR} 0 ${largeArcFlag} 1 ${innerEnd.x} ${innerEnd.y}`,
+        "Z"
+      ].join(" ");
+    }
+
+    function labelPosition(cx, cy, radius, angleDeg) {
+      return polarToCartesian(cx, cy, radius, angleDeg);
+    }
+
+    function getScore() {
+      const parsed = Number.parseInt(scoreInput.value, 10);
+      if (Number.isNaN(parsed)) return 0;
+      return Math.max(0, Math.min(170, parsed));
+    }
+
+    function getShotResult(score, hitValue, canCheckout) {
+      const remaining = score - hitValue;
+      const isCheckout = remaining === 0 && canCheckout;
+      const isBust = remaining < 0 || remaining === 1 || (remaining === 0 && !canCheckout);
+      return {
+        remaining,
+        isCheckout,
+        isBust,
+        text: isBust ? "" : String(remaining)
+      };
+    }
+
+    function getRemainingScore(score, hitValue, canCheckout) {
+      const result = getShotResult(score, hitValue, canCheckout);
+      return result.isBust ? score : result.remaining;
+    }
+
+    function textColourForRing(ring, index) {
+      if (ring === "singleOuter" || ring === "singleInner") {
+        return index % 2 === 0 ? COLOURS.textLight : COLOURS.textDark;
+      }
+      return COLOURS.textLight;
+    }
+
+    function segmentFill(ring, index) {
+      if (ring === "double" || ring === "triple") {
+        return index % 2 === 0 ? COLOURS.red : COLOURS.green;
+      }
+      return index % 2 === 0 ? COLOURS.black : COLOURS.white;
+    }
+
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      Object.entries(attrs).forEach(([key, value]) => {
+        if (key === "style") Object.assign(el.style, value);
+        else el.setAttribute(key, value);
+      });
+      return el;
+    }
+
+    function addText(svg, text, attrs) {
+      const el = svgEl("text", attrs);
+      el.textContent = text;
+      svg.appendChild(el);
+      return el;
+    }
+
+    function handleHit(hitValue, canCheckout) {
+      const nextScore = getRemainingScore(getScore(), hitValue, canCheckout);
+      scoreInput.value = String(nextScore);
+      renderBoard();
+    }
+
+    function renderBoard() {
+      const score = getScore();
+      const cx = 500;
+      const cy = 500;
+      const board = {
+        outerNumber: 452,
+        doubleOuter: 405,
+        doubleInner: 355,
+        tripleOuter: 238,
+        tripleInner: 195,
+        outerBull: 72,
+        innerBull: 36
+      };
+      const boardValueFontSize = 24;
+      const rings = [
+        { key: "double", inner: board.doubleInner, outer: board.doubleOuter, multiplier: 2, labelRadius: 380, showLabel: true, canCheckout: true },
+        { key: "singleOuter", inner: board.tripleOuter, outer: board.doubleInner, multiplier: 1, labelRadius: 296, showLabel: true, canCheckout: false },
+        { key: "triple", inner: board.tripleInner, outer: board.tripleOuter, multiplier: 3, labelRadius: 216, showLabel: true, canCheckout: false },
+        { key: "singleInner", inner: board.outerBull, outer: board.tripleInner, multiplier: 1, labelRadius: 134, showLabel: false, canCheckout: false }
+      ];
+
+      boardWrap.innerHTML = "";
+      const svg = svgEl("svg", {
+        viewBox: "0 0 1000 1000",
+        class: "dartboard",
+        role: "img",
+        "aria-label": "Clickable dartboard checkout calculator"
+      });
+      boardWrap.appendChild(svg);
+
+      svg.appendChild(svgEl("rect", { width: 1000, height: 1000, fill: COLOURS.background }));
+      svg.appendChild(svgEl("circle", { cx, cy, r: 470, fill: "none", stroke: "#3c3c3c", "stroke-width": 4 }));
+      svg.appendChild(svgEl("circle", { cx, cy, r: 430, fill: "none", stroke: "#9a9a9a", "stroke-width": 2 }));
+      svg.appendChild(svgEl("circle", { cx, cy, r: 410, fill: "none", stroke: "#595959", "stroke-width": 4 }));
+
+      BOARD_ORDER.forEach((number, index) => {
+        const pos = labelPosition(cx, cy, board.outerNumber, index * 18);
+        addText(svg, number, {
+          x: pos.x,
+          y: pos.y,
+          "text-anchor": "middle",
+          "dominant-baseline": "middle",
+          "font-size": 38,
+          "font-weight": 900,
+          fill: "white",
+          style: { paintOrder: "stroke", stroke: "#111", strokeWidth: 3 }
+        });
+      });
+
+      rings.forEach((ring) => {
+        BOARD_ORDER.forEach((number, index) => {
+          const start = index * 18 - 9;
+          const end = index * 18 + 9;
+          const centre = index * 18;
+          const hitValue = number * ring.multiplier;
+          const pos = labelPosition(cx, cy, ring.labelRadius, centre);
+          const shot = getShotResult(score, hitValue, ring.canCheckout);
+          const g = svgEl("g", { class: "segment" });
+          g.style.cursor = shot.isBust ? "default" : "pointer";
+          g.addEventListener("click", () => handleHit(hitValue, ring.canCheckout));
+          svg.appendChild(g);
+
+          g.appendChild(svgEl("path", {
+            d: annularSectorPath(cx, cy, ring.inner, ring.outer, start, end),
+            fill: segmentFill(ring.key, index),
+            stroke: COLOURS.wire,
+            "stroke-width": 2
+          }));
+
+          if (ring.showLabel && !shot.isBust) {
+            const label = svgEl("text", {
+              x: pos.x,
+              y: pos.y,
+              "text-anchor": "middle",
+              "dominant-baseline": "middle",
+              "font-size": boardValueFontSize,
+              "font-weight": 800,
+              fill: shot.isCheckout ? COLOURS.checkout : textColourForRing(ring.key, index),
+              style: {
+                paintOrder: "stroke",
+                stroke: shot.isCheckout ? COLOURS.checkoutStroke : ring.key.includes("single") ? "transparent" : "rgba(0,0,0,0.2)",
+                strokeWidth: shot.isCheckout ? 5 : 2,
+                pointerEvents: "none"
+              }
+            });
+            label.textContent = shot.text;
+            g.appendChild(label);
+          }
+        });
+      });
+
+      const outerBullShot = getShotResult(score, 25, false);
+      const outerBull = svgEl("g");
+      outerBull.style.cursor = outerBullShot.isBust ? "default" : "pointer";
+      outerBull.addEventListener("click", () => handleHit(25, false));
+      svg.appendChild(outerBull);
+      outerBull.appendChild(svgEl("circle", { cx, cy, r: board.outerBull, fill: COLOURS.green, stroke: COLOURS.wire, "stroke-width": 2 }));
+      if (!outerBullShot.isBust) {
+        const text = svgEl("text", {
+          x: cx,
+          y: cy - 54,
+          "text-anchor": "middle",
+          "dominant-baseline": "middle",
+          "font-size": boardValueFontSize,
+          "font-weight": 800,
+          fill: "white",
+          style: { pointerEvents: "none" }
+        });
+        text.textContent = outerBullShot.text;
+        outerBull.appendChild(text);
+      }
+
+      const bullShot = getShotResult(score, 50, true);
+      const bull = svgEl("g");
+      bull.style.cursor = bullShot.isBust ? "default" : "pointer";
+      bull.addEventListener("click", () => handleHit(50, true));
+      svg.appendChild(bull);
+      bull.appendChild(svgEl("circle", { cx, cy, r: board.innerBull, fill: COLOURS.red, stroke: COLOURS.wire, "stroke-width": 2 }));
+      if (!bullShot.isBust) {
+        const text = svgEl("text", {
+          x: cx,
+          y: cy + 1,
+          "text-anchor": "middle",
+          "dominant-baseline": "middle",
+          "font-size": boardValueFontSize,
+          "font-weight": 800,
+          fill: bullShot.isCheckout ? COLOURS.checkout : "white",
+          style: {
+            pointerEvents: "none",
+            paintOrder: "stroke",
+            stroke: bullShot.isCheckout ? COLOURS.checkoutStroke : "transparent",
+            strokeWidth: bullShot.isCheckout ? 5 : 0
+          }
+        });
+        text.textContent = bullShot.text;
+        bull.appendChild(text);
+      }
+    }
+
+    scoreInput.addEventListener("input", () => {
+      scoreInput.value = scoreInput.value.replace(/[^0-9]/g, "");
+      renderBoard();
+    });
+
+    randomButton.addEventListener("click", () => {
+      const range = TARGET_RANGES.find((item) => item.label === rangeSelect.value) || TARGET_RANGES[0];
+      const randomScore = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      scoreInput.value = String(randomScore);
+      renderBoard();
+    });
+
+    renderBoard();
+  </script>
+</body>
 </html>
