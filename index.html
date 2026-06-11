@@ -9,7 +9,9 @@
     * { box-sizing: border-box; }
     html, body { min-height: 100%; margin: 0; }
     body {
-      background: #09090b;
+      background:
+        radial-gradient(circle at top, rgba(31, 41, 55, 0.9), transparent 36rem),
+        linear-gradient(180deg, #0f172a 0%, #09090b 58%, #020617 100%);
       color: white;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overscroll-behavior: none;
@@ -17,119 +19,199 @@
     button, input, select { font: inherit; }
     .app-shell {
       min-height: 100dvh;
-      padding: max(4px, env(safe-area-inset-top)) 4px max(4px, env(safe-area-inset-bottom));
+      padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
       overflow: hidden;
-      background: #09090b;
     }
     .phone-layout {
       width: 100%;
-      max-width: 480px;
-      min-height: 100dvh;
+      max-width: 520px;
+      min-height: calc(100dvh - 20px);
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 10px;
     }
-    .controls {
-      position: sticky;
-      top: 0;
-      z-index: 10;
+    .top-panel {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 22px;
+      background: rgba(15, 23, 42, 0.88);
+      box-shadow: 0 18px 36px rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(12px);
+      padding: 12px;
+    }
+    .score-row {
       display: grid;
-      grid-template-columns: 72px 1fr 44px;
+      grid-template-columns: minmax(120px, 1fr) 132px;
+      gap: 10px;
+      align-items: stretch;
+    }
+    .score-card {
+      min-width: 0;
+      border-radius: 18px;
+      background:
+        linear-gradient(135deg, rgba(34, 197, 94, 0.20), rgba(34, 197, 94, 0.02)),
+        rgba(2, 6, 23, 0.84);
+      border: 1px solid rgba(34, 197, 94, 0.24);
+      padding: 10px 12px;
+    }
+    .score-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 8px;
-      align-items: end;
-      padding: 8px;
-      border: 1px solid #27272a;
-      border-radius: 14px;
-      background: rgba(24, 24, 27, 0.96);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
-      backdrop-filter: blur(8px);
-    }
-    .field { min-width: 0; }
-    .field label {
-      display: block;
-      margin: 0 0 3px;
-      color: #d4d4d8;
-      font-size: 10px;
+      color: #cbd5e1;
+      font-size: 11px;
       line-height: 1;
-      font-weight: 700;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
     }
-    .field input, .field select {
+    .score-input {
       width: 100%;
-      height: 36px;
-      border: 1px solid #3f3f46;
-      border-radius: 10px;
-      background: #09090b;
+      height: 58px;
+      border: 0;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.30);
       color: white;
       outline: none;
-    }
-    .field input {
-      padding: 0 6px;
       text-align: center;
-      font-size: 18px;
-      font-weight: 900;
+      font-size: clamp(34px, 12vw, 56px);
+      font-weight: 950;
+      line-height: 1;
+      letter-spacing: -0.05em;
     }
-    .field select {
-      padding: 0 8px;
+    .range-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+    .field-label {
+      color: #cbd5e1;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .range-select {
+      width: 100%;
+      height: 38px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      background: rgba(2, 6, 23, 0.78);
+      color: white;
+      outline: none;
+      padding: 0 9px;
       font-size: 14px;
       font-weight: 800;
     }
     .random-button {
-      width: 44px;
-      height: 36px;
-      display: grid;
-      place-items: center;
+      height: 42px;
+      width: 100%;
       border: 0;
-      border-radius: 10px;
-      background: white;
-      color: #09090b;
-      font-size: 20px;
-      font-weight: 900;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #f8fafc, #dbeafe);
+      color: #020617;
+      font-size: 14px;
+      font-weight: 950;
       cursor: pointer;
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.3);
     }
     .random-button:active { transform: translateY(1px); }
-    .board-section {
+    .hint-row {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .status-pill {
+      min-height: 24px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: rgba(255, 255, 255, 0.07);
+      color: #cbd5e1;
+      white-space: nowrap;
+    }
+    .status-pill.checkout {
+      background: rgba(34, 197, 94, 0.18);
+      color: #86efac;
+    }
+    .board-card {
       flex: 1;
       min-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      background: rgba(2, 6, 23, 0.52);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 18px 38px rgba(0, 0, 0, 0.38);
+      padding: 8px;
+      overflow: hidden;
     }
     .board-wrap { width: 100%; max-width: none; margin: 0 auto; }
     .dartboard {
       display: block;
       width: 100%;
       height: auto;
-      max-height: calc(100dvh - 64px);
-      border-radius: 14px;
+      max-height: calc(100dvh - 168px);
+      border-radius: 18px;
       background: black;
-      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.50);
       touch-action: manipulation;
       user-select: none;
     }
-    .segment:active { opacity: 0.85; }
-    @media (min-width: 700px) {
-      .phone-layout { max-width: 640px; }
-      .controls { grid-template-columns: 90px 1fr 54px; }
-      .random-button { width: 54px; }
+    .segment:active { opacity: 0.82; }
+    @media (max-width: 380px) {
+      .app-shell { padding-left: 6px; padding-right: 6px; }
+      .phone-layout { gap: 6px; }
+      .top-panel { padding: 9px; border-radius: 18px; }
+      .score-row { grid-template-columns: 1fr 112px; gap: 8px; }
+      .score-input { height: 52px; }
+      .range-select { height: 34px; font-size: 13px; }
+      .random-button { height: 38px; }
+      .hint-row { margin-top: 7px; font-size: 11px; }
+      .board-card { padding: 5px; border-radius: 18px; }
+      .dartboard { max-height: calc(100dvh - 146px); }
+    }
+    @media (min-width: 760px) {
+      .phone-layout { max-width: 680px; }
+      .dartboard { max-height: calc(100dvh - 178px); }
     }
   </style>
 </head>
 <body>
   <main class="app-shell">
     <div class="phone-layout">
-      <header class="controls">
-        <div class="field">
-          <label for="score">Score</label>
-          <input id="score" inputmode="numeric" value="62" />
+      <section class="top-panel" aria-label="Score controls">
+        <div class="score-row">
+          <div class="score-card">
+            <div class="score-label">
+              <span>Required</span>
+              <span id="scoreNote">Tap board to play</span>
+            </div>
+            <input id="score" class="score-input" inputmode="numeric" value="62" aria-label="Required score" />
+          </div>
+          <div class="range-card">
+            <label class="field-label" for="range">Random</label>
+            <select id="range" class="range-select"></select>
+            <button id="random" class="random-button" aria-label="Choose random target">New target</button>
+          </div>
         </div>
-        <div class="field">
-          <label for="range">Range</label>
-          <select id="range"></select>
+        <div class="hint-row">
+          <span class="status-pill" id="bustStatus">Busts hidden</span>
+          <span class="status-pill checkout" id="finishStatus">Checkouts glow green</span>
         </div>
-        <button id="random" class="random-button" aria-label="Choose random target">↻</button>
-      </header>
-      <section class="board-section">
+      </section>
+
+      <section class="board-card">
         <div class="board-wrap" id="boardWrap"></div>
       </section>
     </div>
@@ -168,6 +250,7 @@
     const rangeSelect = document.getElementById("range");
     const randomButton = document.getElementById("random");
     const boardWrap = document.getElementById("boardWrap");
+    const scoreNote = document.getElementById("scoreNote");
 
     TARGET_RANGES.forEach((range) => {
       const option = document.createElement("option");
@@ -257,10 +340,20 @@
       return el;
     }
 
-    function handleHit(hitValue, canCheckout) {
-      const nextScore = getRemainingScore(getScore(), hitValue, canCheckout);
-      scoreInput.value = String(nextScore);
+    function setScore(value, note) {
+      scoreInput.value = String(value);
+      scoreNote.textContent = note || "Tap board to play";
       renderBoard();
+    }
+
+    function handleHit(hitValue, canCheckout) {
+      const current = getScore();
+      const result = getShotResult(current, hitValue, canCheckout);
+      if (result.isBust) {
+        scoreNote.textContent = "Bust shot ignored";
+        return;
+      }
+      setScore(result.remaining, result.isCheckout ? "Finished" : `Hit ${hitValue}`);
     }
 
     function renderBoard() {
@@ -404,14 +497,14 @@
 
     scoreInput.addEventListener("input", () => {
       scoreInput.value = scoreInput.value.replace(/[^0-9]/g, "");
+      scoreNote.textContent = "Manual score";
       renderBoard();
     });
 
     randomButton.addEventListener("click", () => {
       const range = TARGET_RANGES.find((item) => item.label === rangeSelect.value) || TARGET_RANGES[0];
       const randomScore = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-      scoreInput.value = String(randomScore);
-      renderBoard();
+      setScore(randomScore, `Random ${range.label}`);
     });
 
     renderBoard();
