@@ -6,15 +6,17 @@
   <meta name="theme-color" content="#09090b" />
   <title>Dartboard Calculator</title>
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { min-height: 100%; margin: 0; }
     body {
       background: #09090b;
       color: white;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overscroll-behavior: none;
+      touch-action: manipulation;
     }
     button, input, select { font: inherit; }
+    button { cursor: pointer; }
     .app-shell {
       min-height: 100dvh;
       padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
@@ -29,6 +31,56 @@
       flex-direction: column;
       gap: 10px;
     }
+    .app-header {
+      border: 1px solid #27272a;
+      border-radius: 22px;
+      background: #18181b;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+      padding: 10px;
+    }
+    .app-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .app-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: -0.03em;
+    }
+    .app-subtitle {
+      color: #a1a1aa;
+      font-size: 11px;
+      font-weight: 800;
+      text-align: right;
+      line-height: 1.15;
+    }
+    .screen-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .screen-tab {
+      min-height: 44px;
+      border: 1px solid #3f3f46;
+      border-radius: 14px;
+      background: #09090b;
+      color: #d4d4d8;
+      font-size: 14px;
+      font-weight: 950;
+    }
+    .screen-tab.active {
+      background: #f4f4f5;
+      color: #09090b;
+      border-color: #f4f4f5;
+    }
+    .screen { display: none; min-height: 0; flex: 1; }
+    .screen.active { display: flex; flex-direction: column; gap: 10px; }
+
     .top-panel {
       border: 1px solid #27272a;
       border-radius: 22px;
@@ -115,7 +167,8 @@
       font-size: 14px;
       font-weight: 800;
     }
-    .random-button {
+    .random-button,
+    .plain-button {
       height: 42px;
       width: 100%;
       border: 0;
@@ -127,7 +180,11 @@
       cursor: pointer;
       box-shadow: 0 8px 18px rgba(0, 0, 0, 0.26);
     }
-    .random-button:active { transform: translateY(1px); }
+    .random-button:active,
+    .plain-button:active,
+    .screen-tab:active,
+    .flash-card:active,
+    .choice-button:active { transform: translateY(1px); }
     .board-card {
       flex: 1;
       min-height: 0;
@@ -146,7 +203,7 @@
       display: block;
       width: 100%;
       height: auto;
-      max-height: calc(100dvh - 146px);
+      max-height: calc(100dvh - 212px);
       border-radius: 18px;
       background: black;
       box-shadow: 0 18px 34px rgba(0, 0, 0, 0.50);
@@ -154,47 +211,347 @@
       user-select: none;
     }
     .segment:active { opacity: 0.82; }
+
+    .flash-screen {
+      padding-bottom: calc(82px + env(safe-area-inset-bottom));
+    }
+    .flash-filters {
+      border: 1px solid #27272a;
+      border-radius: 22px;
+      background: #18181b;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+      overflow: hidden;
+    }
+    .flash-filters summary {
+      min-height: 52px;
+      padding: 0 14px;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+    .flash-filters summary::-webkit-details-marker { display: none; }
+    .flash-filters summary::after {
+      content: "Open";
+      color: #facc15;
+      font-size: 12px;
+      font-weight: 950;
+    }
+    .flash-filters[open] summary::after { content: "Close"; }
+    .flash-controls {
+      display: grid;
+      gap: 12px;
+      padding: 0 14px 14px;
+    }
+    .flash-field {
+      display: grid;
+      gap: 7px;
+    }
+    .flash-select {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 50px;
+      border: 1px solid #3f3f46;
+      border-radius: 14px;
+      background: #09090b;
+      color: white;
+      outline: none;
+      padding: 0 30px 0 12px;
+      font-size: 16px;
+      font-weight: 850;
+    }
+    .flash-card {
+      flex: 1;
+      min-height: 390px;
+      border: 1px solid #27272a;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(244, 244, 245, 0.08), transparent 48%),
+        #18181b;
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+      padding: 20px;
+      display: grid;
+      align-content: center;
+      gap: 18px;
+      text-align: center;
+      user-select: none;
+      cursor: pointer;
+    }
+    .flash-eyebrow {
+      color: #a1a1aa;
+      font-size: 11px;
+      font-weight: 950;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+    }
+    .flash-count {
+      color: #a1a1aa;
+      font-size: 12px;
+      font-weight: 850;
+      min-height: 1.2em;
+    }
+    .flash-score {
+      font-size: clamp(84px, 31vw, 150px);
+      line-height: 0.86;
+      font-weight: 1000;
+      letter-spacing: -0.08em;
+    }
+    .answer-zone {
+      display: grid;
+      gap: 8px;
+      align-content: center;
+      min-height: 128px;
+    }
+    .first-dart-answer {
+      color: #facc15;
+      font-size: clamp(56px, 18vw, 94px);
+      line-height: 0.92;
+      font-weight: 1000;
+      letter-spacing: -0.05em;
+    }
+    .checkout-answer {
+      font-size: clamp(22px, 6vw, 32px);
+      font-weight: 950;
+      color: #f4f4f5;
+    }
+    .flash-hint {
+      color: #a1a1aa;
+      font-size: 15px;
+      font-weight: 750;
+      min-height: 1.25em;
+    }
+    .is-hidden { visibility: hidden; }
+    .choices {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .choice-button {
+      min-height: 68px;
+      border: 1px solid #3f3f46;
+      border-radius: 18px;
+      background: #09090b;
+      color: white;
+      font-size: 23px;
+      font-weight: 1000;
+    }
+    .choice-button.correct {
+      background: rgba(34, 197, 94, 0.25);
+      border-color: #22c55e;
+    }
+    .choice-button.wrong {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: #ef4444;
+    }
+    .list-panel {
+      border: 1px solid #27272a;
+      border-radius: 18px;
+      background: #18181b;
+      overflow: hidden;
+    }
+    .list-panel summary {
+      min-height: 48px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 950;
+      cursor: pointer;
+    }
+    .checkout-list {
+      padding: 0 14px 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 8px;
+    }
+    .checkout-item {
+      border: 1px solid #3f3f46;
+      border-radius: 12px;
+      background: #09090b;
+      padding: 9px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .checkout-score {
+      color: #facc15;
+      font-size: 16px;
+      font-weight: 1000;
+    }
+    .checkout-route {
+      color: #d4d4d8;
+      font-size: 13px;
+      font-weight: 850;
+      text-align: right;
+    }
+    .flash-actions {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(9, 9, 11, 0.9);
+      border-top: 1px solid #27272a;
+      backdrop-filter: blur(14px);
+      z-index: 20;
+    }
+    .flash-actions[hidden] { display: none; }
+    .flash-actions-inner {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .flash-action-button {
+      min-height: 60px;
+      border: 1px solid #3f3f46;
+      border-radius: 18px;
+      background: #18181b;
+      color: white;
+      font-size: 17px;
+      font-weight: 950;
+    }
+    .flash-action-button.primary {
+      border: 0;
+      background: #f4f4f5;
+      color: #09090b;
+    }
+
     @media (max-width: 380px) {
       .app-shell { padding-left: 6px; padding-right: 6px; }
       .phone-layout { gap: 6px; }
+      .app-header { padding: 8px; border-radius: 18px; }
       .top-panel { padding: 9px; border-radius: 18px; }
       .score-row { grid-template-columns: 1fr 112px; gap: 8px; }
       .score-input { height: 52px; }
       .range-select { height: 34px; font-size: 13px; }
       .random-button { height: 38px; }
       .board-card { padding: 5px; border-radius: 18px; }
-      .dartboard { max-height: calc(100dvh - 132px); }
+      .dartboard { max-height: calc(100dvh - 196px); }
+      .flash-card { min-height: 330px; border-radius: 22px; padding: 16px; }
+      .flash-score { font-size: clamp(72px, 29vw, 120px); }
+      .first-dart-answer { font-size: clamp(48px, 17vw, 76px); }
+      .choice-button { min-height: 60px; }
     }
     @media (min-width: 760px) {
-      .phone-layout { max-width: 680px; }
-      .dartboard { max-height: calc(100dvh - 154px); }
+      .phone-layout,
+      .flash-actions-inner { max-width: 680px; }
+      .dartboard { max-height: calc(100dvh - 220px); }
+      .flash-controls { grid-template-columns: repeat(3, 1fr); }
+      .choices { grid-template-columns: repeat(4, 1fr); }
+      .flash-card { min-height: 460px; }
     }
   </style>
 </head>
 <body>
   <main class="app-shell">
     <div class="phone-layout">
-      <section class="top-panel" aria-label="Score controls">
-        <div class="score-row">
-          <div class="score-card">
-            <div class="score-label">
-              <span>Required</span>
-              <span id="scoreNote">Tap board to play</span>
-            </div>
-            <input id="score" class="score-input" inputmode="numeric" value="62" aria-label="Required score" />
-          </div>
-          <div class="range-card">
-            <label class="field-label" for="range">Random</label>
-            <div class="select-wrap"><select id="range" class="range-select"></select></div>
-            <button id="random" class="random-button" aria-label="Choose random target">New target</button>
-          </div>
+      <header class="app-header">
+        <div class="app-title-row">
+          <h1 class="app-title">Dartboard Calculator</h1>
+          <div class="app-subtitle" id="headerNote">Practise checkouts</div>
         </div>
+        <nav class="screen-tabs" aria-label="App screens">
+          <button type="button" class="screen-tab active" data-target-screen="calculator">Calculator</button>
+          <button type="button" class="screen-tab" data-target-screen="flashcards">Flash cards</button>
+        </nav>
+      </header>
+
+      <section id="calculatorScreen" class="screen calculator-screen active" aria-label="Dartboard calculator">
+        <section class="top-panel" aria-label="Score controls">
+          <div class="score-row">
+            <div class="score-card">
+              <div class="score-label">
+                <span>Required</span>
+                <span id="scoreNote">Tap board to play</span>
+              </div>
+              <input id="score" class="score-input" inputmode="numeric" value="62" aria-label="Required score" />
+            </div>
+            <div class="range-card">
+              <label class="field-label" for="range">Random</label>
+              <div class="select-wrap"><select id="range" class="range-select"></select></div>
+              <button id="random" class="random-button" aria-label="Choose random target">New target</button>
+            </div>
+          </div>
+        </section>
+        <section class="board-card">
+          <div class="board-wrap" id="boardWrap"></div>
+        </section>
       </section>
-      <section class="board-card">
-        <div class="board-wrap" id="boardWrap"></div>
+
+      <section id="flashcardsScreen" class="screen flash-screen" aria-label="First dart flash cards">
+        <details class="flash-filters">
+          <summary>Filters and mode</summary>
+          <div class="flash-controls">
+            <div class="flash-field">
+              <label class="field-label" for="flashRange">Score range</label>
+              <div class="select-wrap">
+                <select id="flashRange" class="flash-select">
+                  <option value="all">All scores, 60 to 100</option>
+                  <option value="60-69">60 to 69</option>
+                  <option value="70-79">70 to 79</option>
+                  <option value="80-89">80 to 89</option>
+                  <option value="90-100">90 to 100</option>
+                </select>
+              </div>
+            </div>
+            <div class="flash-field">
+              <label class="field-label" for="flashTarget">First dart target</label>
+              <div class="select-wrap">
+                <select id="flashTarget" class="flash-select">
+                  <option value="all">All targets</option>
+                </select>
+              </div>
+            </div>
+            <div class="flash-field">
+              <label class="field-label" for="flashMode">Mode</label>
+              <div class="select-wrap">
+                <select id="flashMode" class="flash-select">
+                  <option value="flash">Flash card</option>
+                  <option value="multiple">Multiple choice</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <section class="flash-card" id="flashCard" tabindex="0" aria-live="polite">
+          <div>
+            <div class="flash-eyebrow">Score</div>
+            <div class="flash-score" id="flashScore">100</div>
+          </div>
+          <div class="answer-zone">
+            <div class="flash-eyebrow">First dart</div>
+            <div class="first-dart-answer is-hidden" id="firstDartAnswer">T20</div>
+            <div class="checkout-answer is-hidden" id="checkoutAnswer">T20, D20</div>
+            <div class="flash-hint" id="flashHint">Tap the card to reveal.</div>
+          </div>
+          <div class="choices" id="flashChoices" hidden></div>
+          <div class="flash-count" id="flashCount">40 cards</div>
+        </section>
+
+        <details class="list-panel">
+          <summary>Show current checkout list</summary>
+          <div class="checkout-list" id="checkoutList"></div>
+        </details>
       </section>
     </div>
   </main>
+
+  <nav class="flash-actions" id="flashActions" aria-label="Flash card actions" hidden>
+    <div class="flash-actions-inner">
+      <button type="button" id="revealFlash" class="flash-action-button">Reveal</button>
+      <button type="button" id="nextFlash" class="flash-action-button primary">Next card</button>
+    </div>
+  </nav>
 
   <script>
     const BOARD_ORDER = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
@@ -211,12 +568,78 @@
       red: "#c93625", green: "#3d9951", textLight: "#ffffff", textDark: "#202020",
       checkout: "#7CFF84", checkoutStroke: "#063b16"
     };
+    const TWO_DART_CHECKOUTS = [
+      { score: 100, first: "T20", second: "D20" },
+      { score: 98, first: "T20", second: "D19" },
+      { score: 97, first: "T19", second: "D20" },
+      { score: 96, first: "T20", second: "D18" },
+      { score: 95, first: "T19", second: "D19" },
+      { score: 94, first: "T18", second: "D20" },
+      { score: 93, first: "T19", second: "D18" },
+      { score: 92, first: "T20", second: "D16" },
+      { score: 91, first: "T17", second: "D20" },
+      { score: 90, first: "T20", second: "D15" },
+      { score: 89, first: "T19", second: "D16" },
+      { score: 88, first: "T16", second: "D20" },
+      { score: 87, first: "T17", second: "D18" },
+      { score: 86, first: "T18", second: "D16" },
+      { score: 85, first: "T15", second: "D20" },
+      { score: 84, first: "T20", second: "D12" },
+      { score: 83, first: "T17", second: "D16" },
+      { score: 82, first: "T14", second: "D20" },
+      { score: 81, first: "T19", second: "D12" },
+      { score: 80, first: "T20", second: "D10" },
+      { score: 79, first: "T19", second: "D11" },
+      { score: 78, first: "T18", second: "D12" },
+      { score: 77, first: "T19", second: "D10" },
+      { score: 76, first: "T20", second: "D8" },
+      { score: 75, first: "T17", second: "D12" },
+      { score: 74, first: "T14", second: "D16" },
+      { score: 73, first: "T19", second: "D8" },
+      { score: 72, first: "T16", second: "D12" },
+      { score: 71, first: "T13", second: "D16" },
+      { score: 70, first: "T10", second: "D20" },
+      { score: 69, first: "T15", second: "D12" },
+      { score: 68, first: "T20", second: "D4" },
+      { score: 67, first: "T17", second: "D8" },
+      { score: 66, first: "T10", second: "D18" },
+      { score: 65, first: "T19", second: "D4" },
+      { score: 64, first: "T16", second: "D8" },
+      { score: 63, first: "T13", second: "D12" },
+      { score: 62, first: "T10", second: "D16" },
+      { score: 61, first: "T15", second: "D8" },
+      { score: 60, first: "20", second: "D20" }
+    ];
 
     const scoreInput = document.getElementById("score");
     const rangeSelect = document.getElementById("range");
     const randomButton = document.getElementById("random");
     const boardWrap = document.getElementById("boardWrap");
     const scoreNote = document.getElementById("scoreNote");
+    const headerNote = document.getElementById("headerNote");
+
+    const calculatorScreen = document.getElementById("calculatorScreen");
+    const flashcardsScreen = document.getElementById("flashcardsScreen");
+    const screenTabs = Array.from(document.querySelectorAll(".screen-tab"));
+    const flashActions = document.getElementById("flashActions");
+
+    const flashRange = document.getElementById("flashRange");
+    const flashTarget = document.getElementById("flashTarget");
+    const flashMode = document.getElementById("flashMode");
+    const flashCard = document.getElementById("flashCard");
+    const flashScore = document.getElementById("flashScore");
+    const firstDartAnswer = document.getElementById("firstDartAnswer");
+    const checkoutAnswer = document.getElementById("checkoutAnswer");
+    const flashHint = document.getElementById("flashHint");
+    const flashChoices = document.getElementById("flashChoices");
+    const flashCount = document.getElementById("flashCount");
+    const checkoutList = document.getElementById("checkoutList");
+    const revealFlash = document.getElementById("revealFlash");
+    const nextFlash = document.getElementById("nextFlash");
+
+    let currentFlashCard = null;
+    let answerVisible = false;
+    let answeredMultipleChoice = false;
 
     TARGET_RANGES.forEach((range) => {
       const option = document.createElement("option");
@@ -224,6 +647,31 @@
       option.textContent = range.label;
       if (range.label === "61-70") option.selected = true;
       rangeSelect.appendChild(option);
+    });
+
+    function setActiveScreen(screenName, updateHash = true) {
+      const isFlashcards = screenName === "flashcards";
+      calculatorScreen.classList.toggle("active", !isFlashcards);
+      flashcardsScreen.classList.toggle("active", isFlashcards);
+      flashActions.hidden = !isFlashcards;
+      headerNote.textContent = isFlashcards ? "First dart practice" : "Practise checkouts";
+
+      screenTabs.forEach((tab) => {
+        const active = tab.dataset.targetScreen === screenName;
+        tab.classList.toggle("active", active);
+        tab.setAttribute("aria-current", active ? "page" : "false");
+      });
+
+      if (updateHash) {
+        history.replaceState(null, "", isFlashcards ? "#flashcards" : "#calculator");
+      }
+
+      if (isFlashcards && !currentFlashCard) renderFlashCard();
+      if (!isFlashcards) renderBoard();
+    }
+
+    screenTabs.forEach((tab) => {
+      tab.addEventListener("click", () => setActiveScreen(tab.dataset.targetScreen));
     });
 
     function polarToCartesian(cx, cy, r, angleDeg) {
@@ -350,6 +798,153 @@
       if (!bullShot.isBust) addText(bull, bullShot.text, { x: cx, y: cy + 1, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": boardValueFontSize, "font-weight": 800, fill: bullShot.isCheckout ? COLOURS.checkout : "white", style: { pointerEvents: "none", paintOrder: "stroke", stroke: bullShot.isCheckout ? COLOURS.checkoutStroke : "transparent", strokeWidth: bullShot.isCheckout ? 5 : 0 } });
     }
 
+    function checkoutRoute(card) {
+      return `${card.first}, ${card.second}`;
+    }
+    function targetSortValue(target) {
+      if (target === "20") return 999;
+      return Number(target.replace("T", ""));
+    }
+    function uniqueFirstTargets() {
+      return [...new Set(TWO_DART_CHECKOUTS.map((item) => item.first))]
+        .sort((a, b) => targetSortValue(a) - targetSortValue(b));
+    }
+    function populateFlashTargets() {
+      uniqueFirstTargets().forEach((target) => {
+        const option = document.createElement("option");
+        option.value = target;
+        option.textContent = target;
+        flashTarget.appendChild(option);
+      });
+    }
+    function filteredFlashCards() {
+      const selectedRange = flashRange.value;
+      const selectedTarget = flashTarget.value;
+
+      return TWO_DART_CHECKOUTS.filter((item) => {
+        let rangeMatch = true;
+        if (selectedRange !== "all") {
+          const [low, high] = selectedRange.split("-").map(Number);
+          rangeMatch = item.score >= low && item.score <= high;
+        }
+        const targetMatch = selectedTarget === "all" || item.first === selectedTarget;
+        return rangeMatch && targetMatch;
+      });
+    }
+    function randomFlashCard() {
+      const cards = filteredFlashCards();
+      if (!cards.length) return null;
+      if (cards.length === 1) return cards[0];
+
+      let next = cards[Math.floor(Math.random() * cards.length)];
+      while (currentFlashCard && next.score === currentFlashCard.score) {
+        next = cards[Math.floor(Math.random() * cards.length)];
+      }
+      return next;
+    }
+    function setFlashAnswerVisible(visible) {
+      answerVisible = visible;
+      firstDartAnswer.classList.toggle("is-hidden", !visible);
+      checkoutAnswer.classList.toggle("is-hidden", !visible);
+      revealFlash.textContent = visible ? "Hide" : "Reveal";
+      if (currentFlashCard) {
+        flashHint.textContent = visible ? "Full checkout shown underneath." : "Tap the card to reveal.";
+      }
+    }
+    function renderFlashCard() {
+      currentFlashCard = randomFlashCard();
+      answeredMultipleChoice = false;
+
+      if (!currentFlashCard) {
+        flashScore.textContent = "No cards";
+        firstDartAnswer.textContent = "";
+        checkoutAnswer.textContent = "";
+        flashHint.textContent = "Change the filters to include some scores.";
+        flashChoices.hidden = true;
+        revealFlash.disabled = true;
+        updateFlashCount();
+        renderCheckoutList();
+        return;
+      }
+
+      revealFlash.disabled = false;
+      flashScore.textContent = currentFlashCard.score;
+      firstDartAnswer.textContent = currentFlashCard.first;
+      checkoutAnswer.textContent = checkoutRoute(currentFlashCard);
+
+      if (flashMode.value === "multiple") {
+        flashChoices.hidden = false;
+        renderChoices();
+      } else {
+        flashChoices.hidden = true;
+        flashChoices.innerHTML = "";
+      }
+
+      setFlashAnswerVisible(false);
+      updateFlashCount();
+      renderCheckoutList();
+    }
+    function renderChoices() {
+      flashChoices.innerHTML = "";
+      const wrongTargets = uniqueFirstTargets().filter((target) => target !== currentFlashCard.first);
+      const options = shuffle([currentFlashCard.first, ...shuffle(wrongTargets).slice(0, 3)]);
+
+      options.forEach((option) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice-button";
+        button.textContent = option;
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          handleChoice(button, option);
+        });
+        flashChoices.appendChild(button);
+      });
+    }
+    function handleChoice(button, option) {
+      if (answeredMultipleChoice) return;
+
+      answeredMultipleChoice = true;
+      const isCorrect = option === currentFlashCard.first;
+
+      if (isCorrect) {
+        button.classList.add("correct");
+        flashHint.textContent = "Correct.";
+      } else {
+        button.classList.add("wrong");
+        flashHint.textContent = `Answer: ${currentFlashCard.first}`;
+        Array.from(flashChoices.children).forEach((choice) => {
+          if (choice.textContent === currentFlashCard.first) {
+            choice.classList.add("correct");
+          }
+        });
+      }
+
+      setFlashAnswerVisible(true);
+    }
+    function updateFlashCount() {
+      const count = filteredFlashCards().length;
+      flashCount.textContent = `${count} card${count === 1 ? "" : "s"}`;
+    }
+    function renderCheckoutList() {
+      const rows = filteredFlashCards().sort((a, b) => b.score - a.score);
+      checkoutList.innerHTML = "";
+      rows.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "checkout-item";
+        row.innerHTML = `<span class="checkout-score">${item.score}</span><span class="checkout-route">${checkoutRoute(item)}</span>`;
+        checkoutList.appendChild(row);
+      });
+    }
+    function shuffle(array) {
+      const copy = [...array];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
     scoreInput.addEventListener("input", () => {
       scoreInput.value = scoreInput.value.replace(/[^0-9]/g, "");
       scoreNote.textContent = "Manual score";
@@ -360,7 +955,37 @@
       const randomScore = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       setScore(randomScore, `Random ${range.label}`);
     });
+
+    flashCard.addEventListener("click", () => {
+      if (flashMode.value === "flash") {
+        setFlashAnswerVisible(!answerVisible);
+      }
+    });
+    flashCard.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        if (flashMode.value === "flash") setFlashAnswerVisible(!answerVisible);
+      }
+    });
+    revealFlash.addEventListener("click", () => setFlashAnswerVisible(!answerVisible));
+    nextFlash.addEventListener("click", renderFlashCard);
+    flashRange.addEventListener("change", renderFlashCard);
+    flashTarget.addEventListener("change", renderFlashCard);
+    flashMode.addEventListener("change", renderFlashCard);
+
+    document.addEventListener("keydown", (event) => {
+      if (!flashcardsScreen.classList.contains("active")) return;
+      if (event.key === "ArrowRight") renderFlashCard();
+      if (event.key === " " && flashMode.value === "flash") {
+        event.preventDefault();
+        setFlashAnswerVisible(!answerVisible);
+      }
+    });
+
+    populateFlashTargets();
     renderBoard();
+    renderFlashCard();
+    setActiveScreen(location.hash === "#flashcards" ? "flashcards" : "calculator", false);
   </script>
 </body>
 </html>
