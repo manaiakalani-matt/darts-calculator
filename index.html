@@ -10,19 +10,19 @@
     html, body { min-height: 100%; margin: 0; }
     body {
       background: #09090b;
-      color: white;
+      color: #fff;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overscroll-behavior: none;
       touch-action: manipulation;
     }
     button, input, select { font: inherit; }
     button { cursor: pointer; }
-    .app-shell {
+    .shell {
       min-height: 100dvh;
       padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
       overflow: hidden;
     }
-    .phone-layout {
+    .layout {
       width: 100%;
       max-width: 520px;
       min-height: calc(100dvh - 20px);
@@ -31,40 +31,42 @@
       flex-direction: column;
       gap: 10px;
     }
-    .app-header {
+    .panel, .header, .board-card, .flash-card, .filters, .list-panel {
       border: 1px solid #27272a;
-      border-radius: 22px;
       background: #18181b;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+      box-shadow: 0 14px 28px rgba(0,0,0,.36);
+    }
+    .header {
+      border-radius: 22px;
       padding: 10px;
     }
-    .app-title-row {
+    .title-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
       margin-bottom: 10px;
     }
-    .app-title {
+    h1 {
       margin: 0;
       font-size: 18px;
       line-height: 1;
       font-weight: 950;
-      letter-spacing: -0.03em;
+      letter-spacing: -.03em;
     }
-    .app-subtitle {
+    .note {
       color: #a1a1aa;
       font-size: 11px;
       font-weight: 800;
       text-align: right;
       line-height: 1.15;
     }
-    .screen-tabs {
+    .tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
     }
-    .screen-tab {
+    .tab {
       min-height: 44px;
       border: 1px solid #3f3f46;
       border-radius: 14px;
@@ -73,19 +75,15 @@
       font-size: 14px;
       font-weight: 950;
     }
-    .screen-tab.active {
+    .tab.active {
       background: #f4f4f5;
       color: #09090b;
       border-color: #f4f4f5;
     }
     .screen { display: none; min-height: 0; flex: 1; }
     .screen.active { display: flex; flex-direction: column; gap: 10px; }
-
-    .top-panel {
-      border: 1px solid #27272a;
+    .panel {
       border-radius: 22px;
-      background: #18181b;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
       padding: 12px;
     }
     .score-row {
@@ -101,7 +99,7 @@
       border: 1px solid #3f3f46;
       padding: 10px 12px;
     }
-    .score-label {
+    .label-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -110,9 +108,17 @@
       font-size: 11px;
       line-height: 1;
       font-weight: 800;
-      letter-spacing: 0.08em;
+      letter-spacing: .08em;
       text-transform: uppercase;
       margin-bottom: 6px;
+    }
+    .field-label {
+      color: #d4d4d8;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
     .score-input {
       width: 100%;
@@ -120,27 +126,19 @@
       border: 0;
       border-radius: 14px;
       background: #18181b;
-      color: white;
+      color: #fff;
       outline: none;
       text-align: center;
       font-size: clamp(34px, 12vw, 56px);
       font-weight: 950;
       line-height: 1;
-      letter-spacing: -0.05em;
+      letter-spacing: -.05em;
     }
-    .range-card {
+    .range-card, .field {
       display: flex;
       flex-direction: column;
       gap: 8px;
       min-width: 0;
-    }
-    .field-label {
-      color: #d4d4d8;
-      font-size: 11px;
-      line-height: 1;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
     }
     .select-wrap { position: relative; }
     .select-wrap::after {
@@ -153,48 +151,41 @@
       font-size: 11px;
       pointer-events: none;
     }
-    .range-select {
+    select {
       appearance: none;
       -webkit-appearance: none;
       width: 100%;
-      height: 38px;
       border: 1px solid #3f3f46;
       border-radius: 12px;
       background: #09090b;
-      color: white;
+      color: #fff;
       outline: none;
-      padding: 0 28px 0 9px;
-      font-size: 14px;
-      font-weight: 800;
+      padding: 0 30px 0 10px;
+      font-weight: 850;
     }
-    .random-button,
-    .plain-button {
-      height: 42px;
-      width: 100%;
+    .range-select { height: 38px; font-size: 14px; }
+    .flash-select { height: 50px; font-size: 16px; }
+    .primary-button, .action.primary {
       border: 0;
-      border-radius: 14px;
       background: #f4f4f5;
       color: #09090b;
+    }
+    .primary-button {
+      height: 42px;
+      width: 100%;
+      border-radius: 14px;
       font-size: 14px;
       font-weight: 950;
-      cursor: pointer;
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.26);
+      box-shadow: 0 8px 18px rgba(0,0,0,.26);
     }
-    .random-button:active,
-    .plain-button:active,
-    .screen-tab:active,
-    .flash-card:active,
-    .choice-button:active { transform: translateY(1px); }
+    button:active, .flash-card:active { transform: translateY(1px); }
     .board-card {
       flex: 1;
       min-height: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid #27272a;
       border-radius: 24px;
-      background: #18181b;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
       padding: 8px;
       overflow: hidden;
     }
@@ -205,75 +196,46 @@
       height: auto;
       max-height: calc(100dvh - 212px);
       border-radius: 18px;
-      background: black;
-      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.50);
+      background: #000;
+      box-shadow: 0 18px 34px rgba(0,0,0,.5);
       touch-action: manipulation;
       user-select: none;
     }
-    .segment:active { opacity: 0.82; }
-
-    .flash-screen {
-      padding-bottom: calc(82px + env(safe-area-inset-bottom));
-    }
-    .flash-filters {
-      border: 1px solid #27272a;
+    .segment:active { opacity: .82; }
+    .flash-screen { padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+    .filters {
       border-radius: 22px;
-      background: #18181b;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
       overflow: hidden;
     }
-    .flash-filters summary {
-      min-height: 52px;
-      padding: 0 14px;
+    .filters summary, .list-panel summary {
       list-style: none;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 14px;
-      font-weight: 950;
       cursor: pointer;
+      font-weight: 950;
     }
-    .flash-filters summary::-webkit-details-marker { display: none; }
-    .flash-filters summary::after {
+    .filters summary {
+      min-height: 52px;
+      justify-content: space-between;
+      padding: 0 14px;
+      font-size: 14px;
+    }
+    .filters summary::-webkit-details-marker, .list-panel summary::-webkit-details-marker { display: none; }
+    .filters summary::after {
       content: "Open";
       color: #facc15;
       font-size: 12px;
-      font-weight: 950;
     }
-    .flash-filters[open] summary::after { content: "Close"; }
-    .flash-controls {
+    .filters[open] summary::after { content: "Close"; }
+    .filter-grid {
       display: grid;
       gap: 12px;
       padding: 0 14px 14px;
     }
-    .flash-field {
-      display: grid;
-      gap: 7px;
-    }
-    .flash-select {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 100%;
-      height: 50px;
-      border: 1px solid #3f3f46;
-      border-radius: 14px;
-      background: #09090b;
-      color: white;
-      outline: none;
-      padding: 0 30px 0 12px;
-      font-size: 16px;
-      font-weight: 850;
-    }
     .flash-card {
       flex: 1;
       min-height: 390px;
-      border: 1px solid #27272a;
       border-radius: 28px;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(244, 244, 245, 0.08), transparent 48%),
-        #18181b;
-      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
       padding: 20px;
       display: grid;
       align-content: center;
@@ -281,25 +243,26 @@
       text-align: center;
       user-select: none;
       cursor: pointer;
+      touch-action: pan-y;
+      transition: transform 160ms ease;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(244,244,245,.08), transparent 48%),
+        #18181b;
     }
-    .flash-eyebrow {
+    .flash-card.swipe-left { transform: translateX(-12px); }
+    .flash-card.swipe-right { transform: translateX(12px); }
+    .eyebrow {
       color: #a1a1aa;
       font-size: 11px;
       font-weight: 950;
       text-transform: uppercase;
-      letter-spacing: 0.10em;
-    }
-    .flash-count {
-      color: #a1a1aa;
-      font-size: 12px;
-      font-weight: 850;
-      min-height: 1.2em;
+      letter-spacing: .10em;
     }
     .flash-score {
       font-size: clamp(84px, 31vw, 150px);
-      line-height: 0.86;
+      line-height: .86;
       font-weight: 1000;
-      letter-spacing: -0.08em;
+      letter-spacing: -.08em;
     }
     .answer-zone {
       display: grid;
@@ -307,61 +270,56 @@
       align-content: center;
       min-height: 128px;
     }
-    .first-dart-answer {
+    .first-answer {
       color: #facc15;
       font-size: clamp(56px, 18vw, 94px);
-      line-height: 0.92;
+      line-height: .92;
       font-weight: 1000;
-      letter-spacing: -0.05em;
+      letter-spacing: -.05em;
     }
     .checkout-answer {
       font-size: clamp(22px, 6vw, 32px);
       font-weight: 950;
       color: #f4f4f5;
     }
-    .flash-hint {
+    .flash-hint, .flash-count {
       color: #a1a1aa;
-      font-size: 15px;
-      font-weight: 750;
+      font-weight: 800;
       min-height: 1.25em;
     }
-    .is-hidden { visibility: hidden; }
+    .flash-hint { font-size: 15px; }
+    .flash-count { font-size: 12px; }
+    .hidden { visibility: hidden; }
     .choices {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
     }
-    .choice-button {
+    .choice {
       min-height: 68px;
       border: 1px solid #3f3f46;
       border-radius: 18px;
       background: #09090b;
-      color: white;
+      color: #fff;
       font-size: 23px;
       font-weight: 1000;
     }
-    .choice-button.correct {
-      background: rgba(34, 197, 94, 0.25);
+    .choice.correct {
+      background: rgba(34,197,94,.25);
       border-color: #22c55e;
     }
-    .choice-button.wrong {
-      background: rgba(239, 68, 68, 0.25);
+    .choice.wrong {
+      background: rgba(239,68,68,.25);
       border-color: #ef4444;
     }
     .list-panel {
-      border: 1px solid #27272a;
       border-radius: 18px;
-      background: #18181b;
       overflow: hidden;
     }
     .list-panel summary {
       min-height: 48px;
       padding: 0 14px;
-      display: flex;
-      align-items: center;
       font-size: 13px;
-      font-weight: 950;
-      cursor: pointer;
     }
     .checkout-list {
       padding: 0 14px 14px;
@@ -390,86 +348,81 @@
       font-weight: 850;
       text-align: right;
     }
-    .flash-actions {
+    .actions {
       position: fixed;
       left: 0;
       right: 0;
       bottom: 0;
       padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(9, 9, 11, 0.9);
+      background: rgba(9,9,11,.9);
       border-top: 1px solid #27272a;
       backdrop-filter: blur(14px);
       z-index: 20;
     }
-    .flash-actions[hidden] { display: none; }
-    .flash-actions-inner {
+    .actions[hidden] { display: none; }
+    .actions-inner {
       width: 100%;
       max-width: 520px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
     }
-    .flash-action-button {
+    .action {
       min-height: 60px;
       border: 1px solid #3f3f46;
       border-radius: 18px;
       background: #18181b;
-      color: white;
-      font-size: 17px;
+      color: #fff;
+      font-size: 15px;
       font-weight: 950;
     }
-    .flash-action-button.primary {
-      border: 0;
-      background: #f4f4f5;
-      color: #09090b;
-    }
-
     @media (max-width: 380px) {
-      .app-shell { padding-left: 6px; padding-right: 6px; }
-      .phone-layout { gap: 6px; }
-      .app-header { padding: 8px; border-radius: 18px; }
-      .top-panel { padding: 9px; border-radius: 18px; }
+      .shell { padding-left: 6px; padding-right: 6px; }
+      .layout { gap: 6px; }
+      .header { padding: 8px; border-radius: 18px; }
+      .panel { padding: 9px; border-radius: 18px; }
       .score-row { grid-template-columns: 1fr 112px; gap: 8px; }
       .score-input { height: 52px; }
       .range-select { height: 34px; font-size: 13px; }
-      .random-button { height: 38px; }
+      .primary-button { height: 38px; }
       .board-card { padding: 5px; border-radius: 18px; }
       .dartboard { max-height: calc(100dvh - 196px); }
       .flash-card { min-height: 330px; border-radius: 22px; padding: 16px; }
       .flash-score { font-size: clamp(72px, 29vw, 120px); }
-      .first-dart-answer { font-size: clamp(48px, 17vw, 76px); }
-      .choice-button { min-height: 60px; }
+      .first-answer { font-size: clamp(48px, 17vw, 76px); }
+      .choice { min-height: 60px; }
+      .actions-inner { gap: 6px; }
+      .action { min-height: 56px; font-size: 13px; }
     }
     @media (min-width: 760px) {
-      .phone-layout,
-      .flash-actions-inner { max-width: 680px; }
+      .layout, .actions-inner { max-width: 680px; }
       .dartboard { max-height: calc(100dvh - 220px); }
-      .flash-controls { grid-template-columns: repeat(3, 1fr); }
+      .filter-grid { grid-template-columns: repeat(3, 1fr); }
       .choices { grid-template-columns: repeat(4, 1fr); }
       .flash-card { min-height: 460px; }
     }
   </style>
 </head>
 <body>
-  <main class="app-shell">
-    <div class="phone-layout">
-      <header class="app-header">
-        <div class="app-title-row">
-          <h1 class="app-title">Dartboard Calculator</h1>
-          <div class="app-subtitle" id="headerNote">Practise checkouts</div>
+  <main class="shell">
+    <div class="layout">
+      <header class="header">
+        <div class="title-row">
+          <h1>Dartboard Calculator</h1>
+          <div class="note" id="headerNote">Practise checkouts</div>
         </div>
-        <nav class="screen-tabs" aria-label="App screens">
-          <button type="button" class="screen-tab active" data-target-screen="calculator">Calculator</button>
-          <button type="button" class="screen-tab" data-target-screen="flashcards">Flash cards</button>
+        <nav class="tabs" aria-label="App screens">
+          <button type="button" class="tab active" data-screen="calculator">Calculator</button>
+          <button type="button" class="tab" data-screen="flashcards">Flash cards</button>
         </nav>
       </header>
 
-      <section id="calculatorScreen" class="screen calculator-screen active" aria-label="Dartboard calculator">
-        <section class="top-panel" aria-label="Score controls">
+      <section id="calculatorScreen" class="screen active" aria-label="Dartboard calculator">
+        <section class="panel" aria-label="Score controls">
           <div class="score-row">
             <div class="score-card">
-              <div class="score-label">
+              <div class="label-row">
                 <span>Required</span>
                 <span id="scoreNote">Tap board to play</span>
               </div>
@@ -478,7 +431,7 @@
             <div class="range-card">
               <label class="field-label" for="range">Random</label>
               <div class="select-wrap"><select id="range" class="range-select"></select></div>
-              <button id="random" class="random-button" aria-label="Choose random target">New target</button>
+              <button type="button" id="random" class="primary-button">New target</button>
             </div>
           </div>
         </section>
@@ -488,10 +441,10 @@
       </section>
 
       <section id="flashcardsScreen" class="screen flash-screen" aria-label="First dart flash cards">
-        <details class="flash-filters">
+        <details class="filters">
           <summary>Filters and mode</summary>
-          <div class="flash-controls">
-            <div class="flash-field">
+          <div class="filter-grid">
+            <div class="field">
               <label class="field-label" for="flashRange">Score range</label>
               <div class="select-wrap">
                 <select id="flashRange" class="flash-select">
@@ -503,7 +456,7 @@
                 </select>
               </div>
             </div>
-            <div class="flash-field">
+            <div class="field">
               <label class="field-label" for="flashTarget">First dart target</label>
               <div class="select-wrap">
                 <select id="flashTarget" class="flash-select">
@@ -511,7 +464,7 @@
                 </select>
               </div>
             </div>
-            <div class="flash-field">
+            <div class="field">
               <label class="field-label" for="flashMode">Mode</label>
               <div class="select-wrap">
                 <select id="flashMode" class="flash-select">
@@ -525,16 +478,16 @@
 
         <section class="flash-card" id="flashCard" tabindex="0" aria-live="polite">
           <div>
-            <div class="flash-eyebrow">Score</div>
+            <div class="eyebrow">Score</div>
             <div class="flash-score" id="flashScore">100</div>
           </div>
           <div class="answer-zone">
-            <div class="flash-eyebrow">First dart</div>
-            <div class="first-dart-answer is-hidden" id="firstDartAnswer">T20</div>
-            <div class="checkout-answer is-hidden" id="checkoutAnswer">T20, D20</div>
-            <div class="flash-hint" id="flashHint">Tap the card to reveal.</div>
+            <div class="eyebrow">First dart</div>
+            <div class="first-answer hidden" id="firstDartAnswer">T20</div>
+            <div class="checkout-answer hidden" id="checkoutAnswer">T20, D20</div>
+            <div class="flash-hint" id="flashHint">Tap to reveal. Swipe left for next.</div>
           </div>
-          <div class="choices" id="flashChoices" hidden></div>
+          <div class="choices" id="choices" hidden></div>
           <div class="flash-count" id="flashCount">40 cards</div>
         </section>
 
@@ -546,10 +499,11 @@
     </div>
   </main>
 
-  <nav class="flash-actions" id="flashActions" aria-label="Flash card actions" hidden>
-    <div class="flash-actions-inner">
-      <button type="button" id="revealFlash" class="flash-action-button">Reveal</button>
-      <button type="button" id="nextFlash" class="flash-action-button primary">Next card</button>
+  <nav class="actions" id="flashActions" aria-label="Flash card actions" hidden>
+    <div class="actions-inner">
+      <button type="button" id="previousFlash" class="action">Previous</button>
+      <button type="button" id="revealFlash" class="action">Reveal</button>
+      <button type="button" id="nextFlash" class="action primary">Next</button>
     </div>
   </nav>
 
@@ -568,78 +522,64 @@
       red: "#c93625", green: "#3d9951", textLight: "#ffffff", textDark: "#202020",
       checkout: "#7CFF84", checkoutStroke: "#063b16"
     };
-    const TWO_DART_CHECKOUTS = [
-      { score: 100, first: "T20", second: "D20" },
-      { score: 98, first: "T20", second: "D19" },
-      { score: 97, first: "T19", second: "D20" },
-      { score: 96, first: "T20", second: "D18" },
-      { score: 95, first: "T19", second: "D19" },
-      { score: 94, first: "T18", second: "D20" },
-      { score: 93, first: "T19", second: "D18" },
-      { score: 92, first: "T20", second: "D16" },
-      { score: 91, first: "T17", second: "D20" },
-      { score: 90, first: "T20", second: "D15" },
-      { score: 89, first: "T19", second: "D16" },
-      { score: 88, first: "T16", second: "D20" },
-      { score: 87, first: "T17", second: "D18" },
-      { score: 86, first: "T18", second: "D16" },
-      { score: 85, first: "T15", second: "D20" },
-      { score: 84, first: "T20", second: "D12" },
-      { score: 83, first: "T17", second: "D16" },
-      { score: 82, first: "T14", second: "D20" },
-      { score: 81, first: "T19", second: "D12" },
-      { score: 80, first: "T20", second: "D10" },
-      { score: 79, first: "T19", second: "D11" },
-      { score: 78, first: "T18", second: "D12" },
-      { score: 77, first: "T19", second: "D10" },
-      { score: 76, first: "T20", second: "D8" },
-      { score: 75, first: "T17", second: "D12" },
-      { score: 74, first: "T14", second: "D16" },
-      { score: 73, first: "T19", second: "D8" },
-      { score: 72, first: "T16", second: "D12" },
-      { score: 71, first: "T13", second: "D16" },
-      { score: 70, first: "T10", second: "D20" },
-      { score: 69, first: "T15", second: "D12" },
-      { score: 68, first: "T20", second: "D4" },
-      { score: 67, first: "T17", second: "D8" },
-      { score: 66, first: "T10", second: "D18" },
-      { score: 65, first: "T19", second: "D4" },
-      { score: 64, first: "T16", second: "D8" },
-      { score: 63, first: "T13", second: "D12" },
-      { score: 62, first: "T10", second: "D16" },
-      { score: 61, first: "T15", second: "D8" },
-      { score: 60, first: "20", second: "D20" }
+    const CHECKOUTS = [
+      { score: 100, first: "T20", second: "D20" }, { score: 98, first: "T20", second: "D19" },
+      { score: 97, first: "T19", second: "D20" }, { score: 96, first: "T20", second: "D18" },
+      { score: 95, first: "T19", second: "D19" }, { score: 94, first: "T18", second: "D20" },
+      { score: 93, first: "T19", second: "D18" }, { score: 92, first: "T20", second: "D16" },
+      { score: 91, first: "T17", second: "D20" }, { score: 90, first: "T20", second: "D15" },
+      { score: 89, first: "T19", second: "D16" }, { score: 88, first: "T16", second: "D20" },
+      { score: 87, first: "T17", second: "D18" }, { score: 86, first: "T18", second: "D16" },
+      { score: 85, first: "T15", second: "D20" }, { score: 84, first: "T20", second: "D12" },
+      { score: 83, first: "T17", second: "D16" }, { score: 82, first: "T14", second: "D20" },
+      { score: 81, first: "T19", second: "D12" }, { score: 80, first: "T20", second: "D10" },
+      { score: 79, first: "T19", second: "D11" }, { score: 78, first: "T18", second: "D12" },
+      { score: 77, first: "T19", second: "D10" }, { score: 76, first: "T20", second: "D8" },
+      { score: 75, first: "T17", second: "D12" }, { score: 74, first: "T14", second: "D16" },
+      { score: 73, first: "T19", second: "D8" }, { score: 72, first: "T16", second: "D12" },
+      { score: 71, first: "T13", second: "D16" }, { score: 70, first: "T10", second: "D20" },
+      { score: 69, first: "T15", second: "D12" }, { score: 68, first: "T20", second: "D4" },
+      { score: 67, first: "T17", second: "D8" }, { score: 66, first: "T10", second: "D18" },
+      { score: 65, first: "T19", second: "D4" }, { score: 64, first: "T16", second: "D8" },
+      { score: 63, first: "T13", second: "D12" }, { score: 62, first: "T10", second: "D16" },
+      { score: 61, first: "T15", second: "D8" }, { score: 60, first: "20", second: "D20" }
     ];
 
-    const scoreInput = document.getElementById("score");
-    const rangeSelect = document.getElementById("range");
-    const randomButton = document.getElementById("random");
-    const boardWrap = document.getElementById("boardWrap");
-    const scoreNote = document.getElementById("scoreNote");
-    const headerNote = document.getElementById("headerNote");
-
-    const calculatorScreen = document.getElementById("calculatorScreen");
-    const flashcardsScreen = document.getElementById("flashcardsScreen");
-    const screenTabs = Array.from(document.querySelectorAll(".screen-tab"));
-    const flashActions = document.getElementById("flashActions");
-
-    const flashRange = document.getElementById("flashRange");
-    const flashTarget = document.getElementById("flashTarget");
-    const flashMode = document.getElementById("flashMode");
-    const flashCard = document.getElementById("flashCard");
-    const flashScore = document.getElementById("flashScore");
-    const firstDartAnswer = document.getElementById("firstDartAnswer");
-    const checkoutAnswer = document.getElementById("checkoutAnswer");
-    const flashHint = document.getElementById("flashHint");
-    const flashChoices = document.getElementById("flashChoices");
-    const flashCount = document.getElementById("flashCount");
-    const checkoutList = document.getElementById("checkoutList");
-    const revealFlash = document.getElementById("revealFlash");
-    const nextFlash = document.getElementById("nextFlash");
+    const $ = (id) => document.getElementById(id);
+    const scoreInput = $("score");
+    const rangeSelect = $("range");
+    const randomButton = $("random");
+    const boardWrap = $("boardWrap");
+    const scoreNote = $("scoreNote");
+    const headerNote = $("headerNote");
+    const calculatorScreen = $("calculatorScreen");
+    const flashcardsScreen = $("flashcardsScreen");
+    const screenTabs = Array.from(document.querySelectorAll(".tab"));
+    const flashActions = $("flashActions");
+    const flashRange = $("flashRange");
+    const flashTarget = $("flashTarget");
+    const flashMode = $("flashMode");
+    const flashCard = $("flashCard");
+    const flashScore = $("flashScore");
+    const firstDartAnswer = $("firstDartAnswer");
+    const checkoutAnswer = $("checkoutAnswer");
+    const flashHint = $("flashHint");
+    const choices = $("choices");
+    const flashCount = $("flashCount");
+    const checkoutList = $("checkoutList");
+    const previousFlash = $("previousFlash");
+    const revealFlash = $("revealFlash");
+    const nextFlash = $("nextFlash");
 
     let currentFlashCard = null;
     let answerVisible = false;
-    let answeredMultipleChoice = false;
+    let answeredChoice = false;
+    let history = [];
+    let historyIndex = -1;
+    let startX = 0;
+    let startY = 0;
+    let touchFromControl = false;
+    let skipTap = false;
 
     TARGET_RANGES.forEach((range) => {
       const option = document.createElement("option");
@@ -649,62 +589,37 @@
       rangeSelect.appendChild(option);
     });
 
-    function setActiveScreen(screenName, updateHash = true) {
-      const isFlashcards = screenName === "flashcards";
-      calculatorScreen.classList.toggle("active", !isFlashcards);
-      flashcardsScreen.classList.toggle("active", isFlashcards);
-      flashActions.hidden = !isFlashcards;
-      headerNote.textContent = isFlashcards ? "First dart practice" : "Practise checkouts";
-
+    function setScreen(name, updateHash = true) {
+      const isCards = name === "flashcards";
+      calculatorScreen.classList.toggle("active", !isCards);
+      flashcardsScreen.classList.toggle("active", isCards);
+      flashActions.hidden = !isCards;
+      headerNote.textContent = isCards ? "First dart practice" : "Practise checkouts";
       screenTabs.forEach((tab) => {
-        const active = tab.dataset.targetScreen === screenName;
+        const active = tab.dataset.screen === name;
         tab.classList.toggle("active", active);
         tab.setAttribute("aria-current", active ? "page" : "false");
       });
-
-      if (updateHash) {
-        history.replaceState(null, "", isFlashcards ? "#flashcards" : "#calculator");
-      }
-
-      if (isFlashcards && !currentFlashCard) renderFlashCard();
-      if (!isFlashcards) renderBoard();
+      if (updateHash) historyReplace(isCards ? "#flashcards" : "#calculator");
+      if (isCards && !currentFlashCard) resetDeck();
+      if (!isCards) renderBoard();
     }
+    function historyReplace(hash) {
+      window.history.replaceState(null, "", hash);
+    }
+    screenTabs.forEach((tab) => tab.addEventListener("click", () => setScreen(tab.dataset.screen)));
 
-    screenTabs.forEach((tab) => {
-      tab.addEventListener("click", () => setActiveScreen(tab.dataset.targetScreen));
-    });
-
-    function polarToCartesian(cx, cy, r, angleDeg) {
+    function polar(cx, cy, r, angleDeg) {
       const angleRad = ((angleDeg - 90) * Math.PI) / 180;
       return { x: cx + r * Math.cos(angleRad), y: cy + r * Math.sin(angleRad) };
     }
-    function annularSectorPath(cx, cy, innerR, outerR, startAngle, endAngle) {
-      const os = polarToCartesian(cx, cy, outerR, endAngle);
-      const oe = polarToCartesian(cx, cy, outerR, startAngle);
-      const is = polarToCartesian(cx, cy, innerR, startAngle);
-      const ie = polarToCartesian(cx, cy, innerR, endAngle);
+    function sector(cx, cy, innerR, outerR, startAngle, endAngle) {
+      const os = polar(cx, cy, outerR, endAngle);
+      const oe = polar(cx, cy, outerR, startAngle);
+      const is = polar(cx, cy, innerR, startAngle);
+      const ie = polar(cx, cy, innerR, endAngle);
       const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
       return [`M ${os.x} ${os.y}`, `A ${outerR} ${outerR} 0 ${largeArcFlag} 0 ${oe.x} ${oe.y}`, `L ${is.x} ${is.y}`, `A ${innerR} ${innerR} 0 ${largeArcFlag} 1 ${ie.x} ${ie.y}`, "Z"].join(" ");
-    }
-    function labelPosition(cx, cy, radius, angleDeg) { return polarToCartesian(cx, cy, radius, angleDeg); }
-    function getScore() {
-      const parsed = Number.parseInt(scoreInput.value, 10);
-      if (Number.isNaN(parsed)) return 0;
-      return Math.max(0, Math.min(170, parsed));
-    }
-    function getShotResult(score, hitValue, canCheckout) {
-      const remaining = score - hitValue;
-      const isCheckout = remaining === 0 && canCheckout;
-      const isBust = remaining < 0 || remaining === 1 || (remaining === 0 && !canCheckout);
-      return { remaining, isCheckout, isBust, text: isBust ? "" : String(remaining) };
-    }
-    function textColourForRing(ring, index) {
-      if (ring === "singleOuter" || ring === "singleInner") return index % 2 === 0 ? COLOURS.textLight : COLOURS.textDark;
-      return COLOURS.textLight;
-    }
-    function segmentFill(ring, index) {
-      if (ring === "double" || ring === "triple") return index % 2 === 0 ? COLOURS.red : COLOURS.green;
-      return index % 2 === 0 ? COLOURS.black : COLOURS.white;
     }
     function svgEl(tag, attrs = {}) {
       const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
@@ -718,33 +633,49 @@
       const el = svgEl("text", attrs);
       el.textContent = text;
       parent.appendChild(el);
-      return el;
+    }
+    function getScore() {
+      const parsed = Number.parseInt(scoreInput.value, 10);
+      if (Number.isNaN(parsed)) return 0;
+      return Math.max(0, Math.min(170, parsed));
+    }
+    function shot(score, value, canCheckout) {
+      const remaining = score - value;
+      const isCheckout = remaining === 0 && canCheckout;
+      const bust = remaining < 0 || remaining === 1 || (remaining === 0 && !canCheckout);
+      return { remaining, isCheckout, bust, text: bust ? "" : String(remaining) };
     }
     function setScore(value, note) {
       scoreInput.value = String(value);
       scoreNote.textContent = note || "Tap board to play";
       renderBoard();
     }
-    function handleHit(hitValue, canCheckout) {
-      const current = getScore();
-      const result = getShotResult(current, hitValue, canCheckout);
-      if (result.isBust) {
-        scoreNote.textContent = "Bust shot ignored";
+    function handleHit(value, canCheckout) {
+      const result = shot(getScore(), value, canCheckout);
+      if (result.bust) {
+        scoreNote.textContent = "Bust";
         return;
       }
-      setScore(result.remaining, result.isCheckout ? "Finished" : `Hit ${hitValue}`);
+      setScore(result.remaining, result.isCheckout ? "Finished" : `Hit ${value}`);
     }
-
+    function textColour(ring, index) {
+      if (ring === "singleOuter" || ring === "singleInner") return index % 2 === 0 ? COLOURS.textLight : COLOURS.textDark;
+      return COLOURS.textLight;
+    }
+    function fillColour(ring, index) {
+      if (ring === "double" || ring === "triple") return index % 2 === 0 ? COLOURS.red : COLOURS.green;
+      return index % 2 === 0 ? COLOURS.black : COLOURS.white;
+    }
     function renderBoard() {
       const score = getScore();
-      const cx = 500, cy = 500;
+      const cx = 500;
+      const cy = 500;
       const board = { outerNumber: 452, doubleOuter: 405, doubleInner: 355, tripleOuter: 238, tripleInner: 195, outerBull: 72, innerBull: 36 };
-      const boardValueFontSize = 24;
       const rings = [
-        { key: "double", inner: board.doubleInner, outer: board.doubleOuter, multiplier: 2, labelRadius: 380, showLabel: true, canCheckout: true },
-        { key: "singleOuter", inner: board.tripleOuter, outer: board.doubleInner, multiplier: 1, labelRadius: 296, showLabel: true, canCheckout: false },
-        { key: "triple", inner: board.tripleInner, outer: board.tripleOuter, multiplier: 3, labelRadius: 216, showLabel: true, canCheckout: false },
-        { key: "singleInner", inner: board.outerBull, outer: board.tripleInner, multiplier: 1, labelRadius: 134, showLabel: false, canCheckout: false }
+        { key: "double", inner: board.doubleInner, outer: board.doubleOuter, multiplier: 2, label: 380, show: true, finish: true },
+        { key: "singleOuter", inner: board.tripleOuter, outer: board.doubleInner, multiplier: 1, label: 296, show: true, finish: false },
+        { key: "triple", inner: board.tripleInner, outer: board.tripleOuter, multiplier: 3, label: 216, show: true, finish: false },
+        { key: "singleInner", inner: board.outerBull, outer: board.tripleInner, multiplier: 1, label: 134, show: false, finish: false }
       ];
 
       boardWrap.innerHTML = "";
@@ -756,183 +687,192 @@
       svg.appendChild(svgEl("circle", { cx, cy, r: 410, fill: "none", stroke: "#595959", "stroke-width": 4 }));
 
       BOARD_ORDER.forEach((number, index) => {
-        const pos = labelPosition(cx, cy, board.outerNumber, index * 18);
-        addText(svg, number, { x: pos.x, y: pos.y, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": 38, "font-weight": 900, fill: "white", style: { paintOrder: "stroke", stroke: "#111", strokeWidth: 3 } });
+        const pos = polar(cx, cy, board.outerNumber, index * 18);
+        addText(svg, number, { x: pos.x, y: pos.y, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": 38, "font-weight": 900, fill: "#fff", style: { paintOrder: "stroke", stroke: "#111", strokeWidth: 3 } });
       });
 
       rings.forEach((ring) => {
         BOARD_ORDER.forEach((number, index) => {
-          const start = index * 18 - 9, end = index * 18 + 9, centre = index * 18;
-          const hitValue = number * ring.multiplier;
-          const pos = labelPosition(cx, cy, ring.labelRadius, centre);
-          const shot = getShotResult(score, hitValue, ring.canCheckout);
-          const g = svgEl("g", { class: "segment" });
-          g.style.cursor = shot.isBust ? "default" : "pointer";
-          g.addEventListener("click", () => handleHit(hitValue, ring.canCheckout));
-          svg.appendChild(g);
-          g.appendChild(svgEl("path", { d: annularSectorPath(cx, cy, ring.inner, ring.outer, start, end), fill: segmentFill(ring.key, index), stroke: COLOURS.wire, "stroke-width": 2 }));
-          if (ring.showLabel && !shot.isBust) {
-            addText(g, shot.text, {
-              x: pos.x, y: pos.y, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": boardValueFontSize, "font-weight": 800,
-              fill: shot.isCheckout ? COLOURS.checkout : textColourForRing(ring.key, index),
-              style: { paintOrder: "stroke", stroke: shot.isCheckout ? COLOURS.checkoutStroke : ring.key.includes("single") ? "transparent" : "rgba(0,0,0,0.2)", strokeWidth: shot.isCheckout ? 5 : 2, pointerEvents: "none" }
+          const start = index * 18 - 9;
+          const end = index * 18 + 9;
+          const centre = index * 18;
+          const value = number * ring.multiplier;
+          const result = shot(score, value, ring.finish);
+          const group = svgEl("g", { class: "segment" });
+          group.style.cursor = result.bust ? "default" : "pointer";
+          group.addEventListener("click", () => handleHit(value, ring.finish));
+          svg.appendChild(group);
+          group.appendChild(svgEl("path", { d: sector(cx, cy, ring.inner, ring.outer, start, end), fill: fillColour(ring.key, index), stroke: COLOURS.wire, "stroke-width": 2 }));
+          if (ring.show && !result.bust) {
+            const pos = polar(cx, cy, ring.label, centre);
+            addText(group, result.text, {
+              x: pos.x, y: pos.y, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": 24, "font-weight": 800,
+              fill: result.isCheckout ? COLOURS.checkout : textColour(ring.key, index),
+              style: { paintOrder: "stroke", stroke: result.isCheckout ? COLOURS.checkoutStroke : ring.key.includes("single") ? "transparent" : "rgba(0,0,0,.2)", strokeWidth: result.isCheckout ? 5 : 2, pointerEvents: "none" }
             });
           }
         });
       });
 
-      const outerBullShot = getShotResult(score, 25, false);
-      const outerBull = svgEl("g");
-      outerBull.style.cursor = outerBullShot.isBust ? "default" : "pointer";
-      outerBull.addEventListener("click", () => handleHit(25, false));
-      svg.appendChild(outerBull);
-      outerBull.appendChild(svgEl("circle", { cx, cy, r: board.outerBull, fill: COLOURS.green, stroke: COLOURS.wire, "stroke-width": 2 }));
-      if (!outerBullShot.isBust) addText(outerBull, outerBullShot.text, { x: cx, y: cy - 54, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": boardValueFontSize, "font-weight": 800, fill: "white", style: { pointerEvents: "none" } });
-
-      const bullShot = getShotResult(score, 50, true);
-      const bull = svgEl("g");
-      bull.style.cursor = bullShot.isBust ? "default" : "pointer";
-      bull.addEventListener("click", () => handleHit(50, true));
-      svg.appendChild(bull);
-      bull.appendChild(svgEl("circle", { cx, cy, r: board.innerBull, fill: COLOURS.red, stroke: COLOURS.wire, "stroke-width": 2 }));
-      if (!bullShot.isBust) addText(bull, bullShot.text, { x: cx, y: cy + 1, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": boardValueFontSize, "font-weight": 800, fill: bullShot.isCheckout ? COLOURS.checkout : "white", style: { pointerEvents: "none", paintOrder: "stroke", stroke: bullShot.isCheckout ? COLOURS.checkoutStroke : "transparent", strokeWidth: bullShot.isCheckout ? 5 : 0 } });
+      addBull(svg, cx, cy, board.outerBull, 25, false, COLOURS.green, -54);
+      addBull(svg, cx, cy, board.innerBull, 50, true, COLOURS.red, 1);
+    }
+    function addBull(svg, cx, cy, radius, value, finish, colour, textOffset) {
+      const result = shot(getScore(), value, finish);
+      const group = svgEl("g");
+      group.style.cursor = result.bust ? "default" : "pointer";
+      group.addEventListener("click", () => handleHit(value, finish));
+      svg.appendChild(group);
+      group.appendChild(svgEl("circle", { cx, cy, r: radius, fill: colour, stroke: COLOURS.wire, "stroke-width": 2 }));
+      if (!result.bust) {
+        addText(group, result.text, { x: cx, y: cy + textOffset, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": 24, "font-weight": 800, fill: result.isCheckout ? COLOURS.checkout : "#fff", style: { pointerEvents: "none", paintOrder: "stroke", stroke: result.isCheckout ? COLOURS.checkoutStroke : "transparent", strokeWidth: result.isCheckout ? 5 : 0 } });
+      }
     }
 
-    function checkoutRoute(card) {
+    function route(card) {
       return `${card.first}, ${card.second}`;
     }
-    function targetSortValue(target) {
-      if (target === "20") return 999;
-      return Number(target.replace("T", ""));
+    function targetValue(target) {
+      return target === "20" ? 999 : Number(target.replace("T", ""));
     }
-    function uniqueFirstTargets() {
-      return [...new Set(TWO_DART_CHECKOUTS.map((item) => item.first))]
-        .sort((a, b) => targetSortValue(a) - targetSortValue(b));
+    function firstTargets() {
+      return [...new Set(CHECKOUTS.map((item) => item.first))].sort((a, b) => targetValue(a) - targetValue(b));
     }
-    function populateFlashTargets() {
-      uniqueFirstTargets().forEach((target) => {
-        const option = document.createElement("option");
-        option.value = target;
-        option.textContent = target;
-        flashTarget.appendChild(option);
-      });
-    }
-    function filteredFlashCards() {
-      const selectedRange = flashRange.value;
-      const selectedTarget = flashTarget.value;
-
-      return TWO_DART_CHECKOUTS.filter((item) => {
+    function filteredCards() {
+      const range = flashRange.value;
+      const target = flashTarget.value;
+      return CHECKOUTS.filter((card) => {
         let rangeMatch = true;
-        if (selectedRange !== "all") {
-          const [low, high] = selectedRange.split("-").map(Number);
-          rangeMatch = item.score >= low && item.score <= high;
+        if (range !== "all") {
+          const [low, high] = range.split("-").map(Number);
+          rangeMatch = card.score >= low && card.score <= high;
         }
-        const targetMatch = selectedTarget === "all" || item.first === selectedTarget;
-        return rangeMatch && targetMatch;
+        return rangeMatch && (target === "all" || card.first === target);
       });
     }
-    function randomFlashCard() {
-      const cards = filteredFlashCards();
+    function randomCard() {
+      const cards = filteredCards();
       if (!cards.length) return null;
       if (cards.length === 1) return cards[0];
-
       let next = cards[Math.floor(Math.random() * cards.length)];
       while (currentFlashCard && next.score === currentFlashCard.score) {
         next = cards[Math.floor(Math.random() * cards.length)];
       }
       return next;
     }
-    function setFlashAnswerVisible(visible) {
+    function setAnswer(visible) {
       answerVisible = visible;
-      firstDartAnswer.classList.toggle("is-hidden", !visible);
-      checkoutAnswer.classList.toggle("is-hidden", !visible);
+      firstDartAnswer.classList.toggle("hidden", !visible);
+      checkoutAnswer.classList.toggle("hidden", !visible);
       revealFlash.textContent = visible ? "Hide" : "Reveal";
-      if (currentFlashCard) {
-        flashHint.textContent = visible ? "Full checkout shown underneath." : "Tap the card to reveal.";
-      }
+      if (!currentFlashCard) return;
+      if (visible) flashHint.textContent = "Swipe left for next, right for previous.";
+      else if (flashMode.value === "multiple") flashHint.textContent = "Choose the first dart. Swipe left for next.";
+      else flashHint.textContent = "Tap to reveal. Swipe left for next.";
     }
-    function renderFlashCard() {
-      currentFlashCard = randomFlashCard();
-      answeredMultipleChoice = false;
-
-      if (!currentFlashCard) {
+    function updatePreviousButton() {
+      const disabled = historyIndex <= 0;
+      previousFlash.disabled = disabled;
+      previousFlash.style.opacity = disabled ? ".55" : "1";
+    }
+    function showCard(card) {
+      currentFlashCard = card;
+      answeredChoice = false;
+      if (!card) {
         flashScore.textContent = "No cards";
         firstDartAnswer.textContent = "";
         checkoutAnswer.textContent = "";
         flashHint.textContent = "Change the filters to include some scores.";
-        flashChoices.hidden = true;
+        choices.hidden = true;
         revealFlash.disabled = true;
-        updateFlashCount();
-        renderCheckoutList();
+        renderList();
+        updateCount();
+        updatePreviousButton();
         return;
       }
-
       revealFlash.disabled = false;
-      flashScore.textContent = currentFlashCard.score;
-      firstDartAnswer.textContent = currentFlashCard.first;
-      checkoutAnswer.textContent = checkoutRoute(currentFlashCard);
-
+      flashScore.textContent = card.score;
+      firstDartAnswer.textContent = card.first;
+      checkoutAnswer.textContent = route(card);
       if (flashMode.value === "multiple") {
-        flashChoices.hidden = false;
+        choices.hidden = false;
         renderChoices();
       } else {
-        flashChoices.hidden = true;
-        flashChoices.innerHTML = "";
+        choices.hidden = true;
+        choices.innerHTML = "";
       }
-
-      setFlashAnswerVisible(false);
-      updateFlashCount();
-      renderCheckoutList();
+      setAnswer(false);
+      renderList();
+      updateCount();
+      updatePreviousButton();
+    }
+    function goNext() {
+      const next = randomCard();
+      if (!next) {
+        showCard(null);
+        return;
+      }
+      if (historyIndex < history.length - 1) history = history.slice(0, historyIndex + 1);
+      history.push(next);
+      historyIndex = history.length - 1;
+      showCard(next);
+    }
+    function goPrevious() {
+      if (historyIndex <= 0) {
+        flashHint.textContent = "No previous card yet.";
+        updatePreviousButton();
+        return;
+      }
+      historyIndex -= 1;
+      showCard(history[historyIndex]);
+    }
+    function resetDeck() {
+      history = [];
+      historyIndex = -1;
+      currentFlashCard = null;
+      goNext();
     }
     function renderChoices() {
-      flashChoices.innerHTML = "";
-      const wrongTargets = uniqueFirstTargets().filter((target) => target !== currentFlashCard.first);
-      const options = shuffle([currentFlashCard.first, ...shuffle(wrongTargets).slice(0, 3)]);
-
-      options.forEach((option) => {
+      choices.innerHTML = "";
+      const wrong = firstTargets().filter((target) => target !== currentFlashCard.first);
+      shuffle([currentFlashCard.first, ...shuffle(wrong).slice(0, 3)]).forEach((option) => {
         const button = document.createElement("button");
         button.type = "button";
-        button.className = "choice-button";
+        button.className = "choice";
         button.textContent = option;
         button.addEventListener("click", (event) => {
           event.stopPropagation();
           handleChoice(button, option);
         });
-        flashChoices.appendChild(button);
+        choices.appendChild(button);
       });
     }
     function handleChoice(button, option) {
-      if (answeredMultipleChoice) return;
-
-      answeredMultipleChoice = true;
-      const isCorrect = option === currentFlashCard.first;
-
-      if (isCorrect) {
+      if (answeredChoice) return;
+      answeredChoice = true;
+      const correct = option === currentFlashCard.first;
+      if (correct) {
         button.classList.add("correct");
-        flashHint.textContent = "Correct.";
       } else {
         button.classList.add("wrong");
-        flashHint.textContent = `Answer: ${currentFlashCard.first}`;
-        Array.from(flashChoices.children).forEach((choice) => {
-          if (choice.textContent === currentFlashCard.first) {
-            choice.classList.add("correct");
-          }
+        Array.from(choices.children).forEach((choice) => {
+          if (choice.textContent === currentFlashCard.first) choice.classList.add("correct");
         });
       }
-
-      setFlashAnswerVisible(true);
+      setAnswer(true);
+      flashHint.textContent = correct ? "Correct. Swipe left for next." : `Answer: ${currentFlashCard.first}. Swipe left for next.`;
     }
-    function updateFlashCount() {
-      const count = filteredFlashCards().length;
-      flashCount.textContent = `${count} card${count === 1 ? "" : "s"}`;
+    function updateCount() {
+      const count = filteredCards().length;
+      const position = historyIndex >= 0 ? ` · Card ${historyIndex + 1} of ${history.length}` : "";
+      flashCount.textContent = `${count} card${count === 1 ? "" : "s"}${position}`;
     }
-    function renderCheckoutList() {
-      const rows = filteredFlashCards().sort((a, b) => b.score - a.score);
+    function renderList() {
       checkoutList.innerHTML = "";
-      rows.forEach((item) => {
+      filteredCards().sort((a, b) => b.score - a.score).forEach((card) => {
         const row = document.createElement("div");
         row.className = "checkout-item";
-        row.innerHTML = `<span class="checkout-score">${item.score}</span><span class="checkout-route">${checkoutRoute(item)}</span>`;
+        row.innerHTML = `<span class="checkout-score">${card.score}</span><span class="checkout-route">${route(card)}</span>`;
         checkoutList.appendChild(row);
       });
     }
@@ -943,6 +883,39 @@
         [copy[i], copy[j]] = [copy[j], copy[i]];
       }
       return copy;
+    }
+    function isControl(element) {
+      return Boolean(element.closest("button, select, input, summary, details"));
+    }
+    function swipeFeedback(direction) {
+      const className = direction === "left" ? "swipe-left" : "swipe-right";
+      flashCard.classList.add(className);
+      window.setTimeout(() => flashCard.classList.remove(className), 160);
+    }
+    function onTouchStart(event) {
+      if (event.touches.length !== 1) return;
+      touchFromControl = isControl(event.target);
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    }
+    function onTouchEnd(event) {
+      if (touchFromControl || !event.changedTouches.length) return;
+      const touch = event.changedTouches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      const isSwipe = Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.25;
+      if (!isSwipe) return;
+
+      skipTap = true;
+      window.setTimeout(() => { skipTap = false; }, 350);
+
+      if (dx < 0) {
+        swipeFeedback("left");
+        goNext();
+      } else {
+        swipeFeedback("right");
+        goPrevious();
+      }
     }
 
     scoreInput.addEventListener("input", () => {
@@ -955,37 +928,43 @@
       const randomScore = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       setScore(randomScore, `Random ${range.label}`);
     });
-
-    flashCard.addEventListener("click", () => {
-      if (flashMode.value === "flash") {
-        setFlashAnswerVisible(!answerVisible);
-      }
+    firstTargets().forEach((target) => {
+      const option = document.createElement("option");
+      option.value = target;
+      option.textContent = target;
+      flashTarget.appendChild(option);
     });
+    flashCard.addEventListener("click", () => {
+      if (skipTap) return;
+      if (flashMode.value === "flash") setAnswer(!answerVisible);
+    });
+    flashCard.addEventListener("touchstart", onTouchStart, { passive: true });
+    flashCard.addEventListener("touchend", onTouchEnd, { passive: true });
     flashCard.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        if (flashMode.value === "flash") setFlashAnswerVisible(!answerVisible);
+        if (flashMode.value === "flash") setAnswer(!answerVisible);
       }
     });
-    revealFlash.addEventListener("click", () => setFlashAnswerVisible(!answerVisible));
-    nextFlash.addEventListener("click", renderFlashCard);
-    flashRange.addEventListener("change", renderFlashCard);
-    flashTarget.addEventListener("change", renderFlashCard);
-    flashMode.addEventListener("change", renderFlashCard);
-
+    previousFlash.addEventListener("click", goPrevious);
+    revealFlash.addEventListener("click", () => setAnswer(!answerVisible));
+    nextFlash.addEventListener("click", goNext);
+    flashRange.addEventListener("change", resetDeck);
+    flashTarget.addEventListener("change", resetDeck);
+    flashMode.addEventListener("change", resetDeck);
     document.addEventListener("keydown", (event) => {
       if (!flashcardsScreen.classList.contains("active")) return;
-      if (event.key === "ArrowRight") renderFlashCard();
+      if (event.key === "ArrowRight") goNext();
+      if (event.key === "ArrowLeft") goPrevious();
       if (event.key === " " && flashMode.value === "flash") {
         event.preventDefault();
-        setFlashAnswerVisible(!answerVisible);
+        setAnswer(!answerVisible);
       }
     });
 
-    populateFlashTargets();
     renderBoard();
-    renderFlashCard();
-    setActiveScreen(location.hash === "#flashcards" ? "flashcards" : "calculator", false);
+    resetDeck();
+    setScreen(location.hash === "#flashcards" ? "flashcards" : "calculator", false);
   </script>
 </body>
 </html>
