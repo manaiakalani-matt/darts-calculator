@@ -39,9 +39,19 @@
     .select-wrap::after { content: "▼"; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #d4d4d8; font-size: 11px; pointer-events: none; }
     select { appearance: none; -webkit-appearance: none; width: 100%; height: 38px; border: 1px solid #3f3f46; border-radius: 12px; background: #09090b; color: #fff; outline: none; padding: 0 28px 0 9px; font-size: 14px; font-weight: 800; }
     .primary-button { height: 42px; width: 100%; border: 0; border-radius: 14px; background: #f4f4f5; color: #09090b; font-size: 14px; font-weight: 950; box-shadow: 0 8px 18px rgba(0,0,0,.26); }
+    .setup-row { margin-top: 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; border: 1px solid #3f3f46; border-radius: 16px; background: #09090b; padding: 9px 10px; }
+    .setup-text { display: grid; gap: 2px; }
+    .setup-title { color: #f4f4f5; font-size: 13px; font-weight: 950; }
+    .setup-subtitle { color: #a1a1aa; font-size: 11px; font-weight: 750; }
+    .switch { position: relative; display: inline-flex; align-items: center; width: 52px; height: 30px; flex: 0 0 auto; }
+    .switch input { position: absolute; opacity: 0; inset: 0; }
+    .slider { position: absolute; inset: 0; border-radius: 999px; background: #3f3f46; transition: .18s ease; }
+    .slider::before { content: ""; position: absolute; width: 24px; height: 24px; left: 3px; top: 3px; border-radius: 50%; background: white; transition: .18s ease; }
+    .switch input:checked + .slider { background: #facc15; }
+    .switch input:checked + .slider::before { transform: translateX(22px); background: #09090b; }
     .board-card { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 8px; overflow: hidden; }
     .board-wrap { width: 100%; }
-    .dartboard { display: block; width: 100%; height: auto; max-height: calc(100dvh - 214px); border-radius: 18px; background: #000; box-shadow: 0 18px 34px rgba(0,0,0,.5); touch-action: manipulation; user-select: none; }
+    .dartboard { display: block; width: 100%; height: auto; max-height: calc(100dvh - 272px); border-radius: 18px; background: #000; box-shadow: 0 18px 34px rgba(0,0,0,.5); touch-action: manipulation; user-select: none; }
     .segment:active { opacity: .82; }
     .flash-screen { padding-bottom: 86px; }
     details { overflow: hidden; }
@@ -86,8 +96,11 @@
       .score-input { height: 52px; }
       select { height: 34px; font-size: 13px; }
       .primary-button { height: 38px; }
+      .setup-row { margin-top: 8px; padding: 8px; }
+      .setup-title { font-size: 12px; }
+      .setup-subtitle { font-size: 10px; }
       .board-card { padding: 5px; border-radius: 18px; }
-      .dartboard { max-height: calc(100dvh - 196px); }
+      .dartboard { max-height: calc(100dvh - 246px); }
       .flash-card { min-height: 330px; border-radius: 22px; padding: 16px; }
       .flash-score { font-size: clamp(72px,29vw,120px); }
       .first-answer { font-size: clamp(40px,14vw,68px); }
@@ -98,7 +111,7 @@
     }
     @media (min-width: 760px) {
       .layout, .actions-inner { max-width: 680px; }
-      .dartboard { max-height: calc(100dvh - 220px); }
+      .dartboard { max-height: calc(100dvh - 278px); }
       .filter-grid { grid-template-columns: repeat(3,1fr); }
       .choices { grid-template-columns: repeat(4,1fr); }
       .flash-card { min-height: 460px; }
@@ -132,6 +145,10 @@
               <button type="button" id="random" class="primary-button">New target</button>
             </div>
           </div>
+          <label class="setup-row" for="setupToggle">
+            <span class="setup-text"><span class="setup-title">Show setup singles</span><span class="setup-subtitle">Yellow = leaves a double finish</span></span>
+            <span class="switch"><input type="checkbox" id="setupToggle" checked /><span class="slider"></span></span>
+          </label>
         </section>
         <section class="board-card"><div class="board-wrap" id="boardWrap"></div></section>
       </section>
@@ -187,7 +204,7 @@
       { label: "121-130", min: 121, max: 130 }, { label: "131-140", min: 131, max: 140 },
       { label: "141-150", min: 141, max: 150 }, { label: "151-170", min: 151, max: 170 }
     ];
-    const COLOURS = { background: "#050505", wire: "#8b8b8b", white: "#f4ebcf", black: "#181818", red: "#c93625", green: "#3d9951", textLight: "#ffffff", textDark: "#202020", checkout: "#7CFF84", checkoutStroke: "#063b16" };
+    const COLOURS = { background: "#050505", wire: "#8b8b8b", white: "#f4ebcf", black: "#181818", red: "#c93625", green: "#3d9951", textLight: "#ffffff", textDark: "#202020", checkout: "#7CFF84", checkoutStroke: "#063b16", setup: "#facc15" };
     const CHECKOUTS = [
       { score: 100, first: "T20", second: "D20" }, { score: 98, first: "T20", second: "D19" },
       { score: 97, first: "T19", second: "D20" }, { score: 96, first: "T20", second: "D18" },
@@ -212,7 +229,7 @@
     ];
 
     const $ = (id) => document.getElementById(id);
-    const scoreInput = $("score"), rangeSelect = $("range"), randomButton = $("random"), boardWrap = $("boardWrap"), scoreNote = $("scoreNote"), headerNote = $("headerNote");
+    const scoreInput = $("score"), rangeSelect = $("range"), randomButton = $("random"), boardWrap = $("boardWrap"), scoreNote = $("scoreNote"), headerNote = $("headerNote"), setupToggle = $("setupToggle");
     const calculatorScreen = $("calculatorScreen"), flashcardsScreen = $("flashcardsScreen"), screenTabs = Array.from(document.querySelectorAll(".tab")), flashActions = $("flashActions");
     const flashRange = $("flashRange"), flashTarget = $("flashTarget"), flashMode = $("flashMode"), flashCard = $("flashCard"), flashScore = $("flashScore"), firstDartAnswer = $("firstDartAnswer"), checkoutAnswer = $("checkoutAnswer"), flashHint = $("flashHint"), choices = $("choices"), flashCount = $("flashCount"), checkoutList = $("checkoutList"), previousFlash = $("previousFlash"), revealFlash = $("revealFlash"), nextFlash = $("nextFlash");
     const statusFilters = Array.from(document.querySelectorAll(".status-filter"));
@@ -250,13 +267,14 @@
     function addText(parent, text, attrs) { const el = svgEl("text", attrs); el.textContent = text; parent.appendChild(el); }
     function getScore() { const parsed = Number.parseInt(scoreInput.value, 10); if (Number.isNaN(parsed)) return 0; return Math.max(0, Math.min(170, parsed)); }
     function shot(score, value, canCheckout) { const remaining = score - value; const isCheckout = remaining === 0 && canCheckout; const bust = remaining < 0 || remaining === 1 || (remaining === 0 && !canCheckout); return { remaining, isCheckout, bust, text: bust ? "" : String(remaining) }; }
+    function leavesDoubleFinish(remaining) { return remaining >= 2 && remaining <= 40 && remaining % 2 === 0; }
     function setScore(value, note) { scoreInput.value = String(value); scoreNote.textContent = note || "Tap board to play"; renderBoard(); }
     function handleHit(value, canCheckout) { const result = shot(getScore(), value, canCheckout); if (result.bust) { scoreNote.textContent = "Bust"; return; } setScore(result.remaining, result.isCheckout ? "Finished" : `Hit ${value}`); }
     function textColour(ring, index) { if (ring === "singleOuter" || ring === "singleInner") return index % 2 === 0 ? COLOURS.textLight : COLOURS.textDark; return COLOURS.textLight; }
     function fillColour(ring, index) { if (ring === "double" || ring === "triple") return index % 2 === 0 ? COLOURS.red : COLOURS.green; return index % 2 === 0 ? COLOURS.black : COLOURS.white; }
 
     function renderBoard() {
-      const score = getScore(), cx = 500, cy = 500;
+      const score = getScore(), cx = 500, cy = 500, showSetups = setupToggle.checked;
       const board = { outerNumber: 452, doubleOuter: 405, doubleInner: 355, tripleOuter: 238, tripleInner: 195, outerBull: 72, innerBull: 36 };
       const rings = [
         { key: "double", inner: board.doubleInner, outer: board.doubleOuter, multiplier: 2, label: 380, show: true, finish: true },
@@ -275,9 +293,17 @@
       rings.forEach((ring) => {
         BOARD_ORDER.forEach((number, index) => {
           const start = index * 18 - 9, end = index * 18 + 9, centre = index * 18, value = number * ring.multiplier, result = shot(score, value, ring.finish);
+          const setup = showSetups && ring.key === "singleOuter" && !result.bust && leavesDoubleFinish(result.remaining);
           const group = svgEl("g", { class: "segment" }); group.style.cursor = result.bust ? "default" : "pointer"; group.addEventListener("click", () => handleHit(value, ring.finish)); svg.appendChild(group);
-          group.appendChild(svgEl("path", { d: sector(cx, cy, ring.inner, ring.outer, start, end), fill: fillColour(ring.key, index), stroke: COLOURS.wire, "stroke-width": 2 }));
-          if (ring.show && !result.bust) { const pos = polar(cx, cy, ring.label, centre); addText(group, result.text, { x: pos.x, y: pos.y, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": 24, "font-weight": 800, fill: result.isCheckout ? COLOURS.checkout : textColour(ring.key, index), style: { paintOrder: "stroke", stroke: result.isCheckout ? COLOURS.checkoutStroke : ring.key.includes("single") ? "transparent" : "rgba(0,0,0,.2)", strokeWidth: result.isCheckout ? 5 : 2, pointerEvents: "none" } }); }
+          group.appendChild(svgEl("path", { d: sector(cx, cy, ring.inner, ring.outer, start, end), fill: fillColour(ring.key, index), stroke: setup ? COLOURS.setup : COLOURS.wire, "stroke-width": setup ? 7 : 2 }));
+          if (ring.show && !result.bust) {
+            const pos = polar(cx, cy, ring.label, centre);
+            addText(group, result.text, {
+              x: pos.x, y: pos.y, "text-anchor": "middle", "dominant-baseline": "middle", "font-size": setup ? 30 : 24, "font-weight": setup ? 1000 : 800,
+              fill: setup ? COLOURS.setup : result.isCheckout ? COLOURS.checkout : textColour(ring.key, index),
+              style: { paintOrder: "stroke", stroke: setup ? "#09090b" : result.isCheckout ? COLOURS.checkoutStroke : ring.key.includes("single") ? "transparent" : "rgba(0,0,0,.2)", strokeWidth: setup ? 6 : result.isCheckout ? 5 : 2, pointerEvents: "none" }
+            });
+          }
         });
       });
       addBull(svg, cx, cy, board.outerBull, 25, false, COLOURS.green, -54);
@@ -309,6 +335,7 @@
     function onTouchEnd(event) { if (touchFromControl || !event.changedTouches.length) return; const touch = event.changedTouches[0]; const dx = touch.clientX - startX, dy = touch.clientY - startY; const isSwipe = Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.25; if (!isSwipe) return; skipTap = true; window.setTimeout(() => { skipTap = false; }, 350); if (dx < 0) { swipeFeedback("left"); goNext(); } else { swipeFeedback("right"); goPrevious(); } }
 
     scoreInput.addEventListener("input", () => { scoreInput.value = scoreInput.value.replace(/[^0-9]/g, ""); scoreNote.textContent = "Manual score"; renderBoard(); });
+    setupToggle.addEventListener("change", renderBoard);
     randomButton.addEventListener("click", () => { const range = TARGET_RANGES.find((item) => item.label === rangeSelect.value) || TARGET_RANGES[0]; const randomScore = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min; setScore(randomScore, `Random ${range.label}`); });
     firstTargets().forEach((target) => { const option = document.createElement("option"); option.value = target; option.textContent = target; flashTarget.appendChild(option); });
     masteryButtons.forEach((button) => button.addEventListener("click", (event) => { event.stopPropagation(); markCurrent(button.dataset.status); }));
