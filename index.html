@@ -47,6 +47,9 @@
     details { overflow: hidden; }
     summary { min-height: 48px; padding: 0 14px; display: flex; align-items: center; font-size: 13px; font-weight: 950; color: #d4d4d8; }
     .filter-grid { padding: 0 14px 14px; display: grid; gap: 10px; }
+    .filter-toggles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .filter-toggle { min-height: 38px; border: 1px solid #3f3f46; border-radius: 12px; background: #09090b; color: #d4d4d8; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 900; }
+    .filter-toggle input { width: 16px; height: 16px; accent-color: #facc15; }
     .flash-card { flex: 1; min-height: 390px; padding: 20px; display: grid; gap: 16px; align-content: space-between; text-align: center; touch-action: pan-y; transition: transform .16s ease; }
     .flash-card.swipe-left { transform: translateX(-10px) rotate(-1deg); }
     .flash-card.swipe-right { transform: translateX(10px) rotate(1deg); }
@@ -63,6 +66,10 @@
     .choice { min-height: 68px; border: 1px solid #3f3f46; border-radius: 18px; background: #09090b; color: #fff; font-size: 23px; font-weight: 1000; }
     .choice.correct { background: rgba(34,197,94,.25); border-color: #22c55e; }
     .choice.wrong { background: rgba(239,68,68,.25); border-color: #ef4444; }
+    .mastery-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .mastery-button { min-height: 48px; border: 1px solid #3f3f46; border-radius: 16px; background: #09090b; color: #fff; font-size: 13px; font-weight: 950; }
+    .mastery-button.active { border-color: #facc15; box-shadow: inset 0 0 0 2px rgba(250,204,21,.55); }
+    .mastery-button:active { transform: translateY(1px); }
     .checkout-list { padding: 0 14px 14px; display: grid; grid-template-columns: repeat(auto-fit,minmax(145px,1fr)); gap: 8px; }
     .checkout-item { border: 1px solid #3f3f46; border-radius: 12px; background: #09090b; padding: 9px 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
     .checkout-score { color: #facc15; font-size: 16px; font-weight: 1000; }
@@ -85,6 +92,7 @@
       .flash-score { font-size: clamp(72px,29vw,120px); }
       .first-answer { font-size: clamp(40px,14vw,68px); }
       .choice { min-height: 60px; }
+      .mastery-button { min-height: 44px; font-size: 12px; }
       .actions-inner { gap: 6px; }
       .action { min-height: 56px; font-size: 13px; }
     }
@@ -135,6 +143,7 @@
             <div class="field"><label class="field-label" for="flashRange">Score range</label><div class="select-wrap"><select id="flashRange"><option value="all">All scores, 60 to 100</option><option value="60-69">60 to 69</option><option value="70-79">70 to 79</option><option value="80-89">80 to 89</option><option value="90-100">90 to 100</option></select></div></div>
             <div class="field"><label class="field-label" for="flashTarget">First dart target</label><div class="select-wrap"><select id="flashTarget"><option value="all">All targets</option></select></div></div>
             <div class="field"><label class="field-label" for="flashMode">Mode</label><div class="select-wrap"><select id="flashMode"><option value="flash">Flash card</option><option value="multiple">Multiple choice</option></select></div></div>
+            <div class="field"><label class="field-label">Rotation status</label><div class="filter-toggles"><label class="filter-toggle"><input type="checkbox" class="status-filter" value="new" checked /> New</label><label class="filter-toggle"><input type="checkbox" class="status-filter" value="mastered" checked /> ✅</label><label class="filter-toggle"><input type="checkbox" class="status-filter" value="nearly" checked /> 🟨</label><label class="filter-toggle"><input type="checkbox" class="status-filter" value="noidea" checked /> ❌</label></div></div>
           </div>
         </details>
 
@@ -147,6 +156,11 @@
             <div class="flash-hint" id="flashHint">Tap to reveal. Swipe left for next.</div>
           </div>
           <div class="choices" id="choices" hidden></div>
+          <div class="mastery-row" id="masteryRow" aria-label="Mark card status">
+            <button type="button" class="mastery-button" data-status="mastered">✅ Mastered</button>
+            <button type="button" class="mastery-button" data-status="nearly">🟨 Nearly</button>
+            <button type="button" class="mastery-button" data-status="noidea">❌ No idea</button>
+          </div>
           <div class="flash-count" id="flashCount">40 cards</div>
         </section>
 
@@ -201,10 +215,21 @@
     const scoreInput = $("score"), rangeSelect = $("range"), randomButton = $("random"), boardWrap = $("boardWrap"), scoreNote = $("scoreNote"), headerNote = $("headerNote");
     const calculatorScreen = $("calculatorScreen"), flashcardsScreen = $("flashcardsScreen"), screenTabs = Array.from(document.querySelectorAll(".tab")), flashActions = $("flashActions");
     const flashRange = $("flashRange"), flashTarget = $("flashTarget"), flashMode = $("flashMode"), flashCard = $("flashCard"), flashScore = $("flashScore"), firstDartAnswer = $("firstDartAnswer"), checkoutAnswer = $("checkoutAnswer"), flashHint = $("flashHint"), choices = $("choices"), flashCount = $("flashCount"), checkoutList = $("checkoutList"), previousFlash = $("previousFlash"), revealFlash = $("revealFlash"), nextFlash = $("nextFlash");
+    const statusFilters = Array.from(document.querySelectorAll(".status-filter"));
+    const masteryButtons = Array.from(document.querySelectorAll(".mastery-button"));
 
     let currentFlashCard = null, answerVisible = false, answeredChoice = false, history = [], historyIndex = -1, startX = 0, startY = 0, touchFromControl = false, skipTap = false;
+    let mastery = loadMastery();
 
     TARGET_RANGES.forEach((range) => { const option = document.createElement("option"); option.value = range.label; option.textContent = range.label; if (range.label === "61-70") option.selected = true; rangeSelect.appendChild(option); });
+
+    function loadMastery() { try { return JSON.parse(localStorage.getItem("dartFlashMastery") || "{}"); } catch { return {}; } }
+    function saveMastery() { localStorage.setItem("dartFlashMastery", JSON.stringify(mastery)); }
+    function cardStatus(card) { return mastery[card.score] || "new"; }
+    function statusEmoji(status) { return status === "mastered" ? "✅" : status === "nearly" ? "🟨" : status === "noidea" ? "❌" : ""; }
+    function selectedStatuses() { return statusFilters.filter((box) => box.checked).map((box) => box.value); }
+    function updateMasteryButtons() { const status = currentFlashCard ? cardStatus(currentFlashCard) : "new"; masteryButtons.forEach((button) => button.classList.toggle("active", button.dataset.status === status)); }
+    function markCurrent(status) { if (!currentFlashCard) return; mastery[currentFlashCard.score] = status; saveMastery(); updateMasteryButtons(); flashHint.textContent = `${statusEmoji(status)} Saved. Swipe left for next.`; renderList(); updateCount(); }
 
     function setScreen(name, updateHash = true) {
       const isCards = name === "flashcards";
@@ -265,18 +290,18 @@
     function route(card) { return `${formatSegment(card.first)}, ${formatSegment(card.second)}`; }
     function targetValue(target) { return target === "20" ? 999 : Number(target.replace("T", "")); }
     function firstTargets() { return [...new Set(CHECKOUTS.map((item) => item.first))].sort((a, b) => targetValue(a) - targetValue(b)); }
-    function filteredCards() { const range = flashRange.value, target = flashTarget.value; return CHECKOUTS.filter((card) => { let rangeMatch = true; if (range !== "all") { const [low, high] = range.split("-").map(Number); rangeMatch = card.score >= low && card.score <= high; } return rangeMatch && (target === "all" || card.first === target); }); }
+    function filteredCards() { const range = flashRange.value, target = flashTarget.value, allowed = selectedStatuses(); return CHECKOUTS.filter((card) => { let rangeMatch = true; if (range !== "all") { const [low, high] = range.split("-").map(Number); rangeMatch = card.score >= low && card.score <= high; } return rangeMatch && (target === "all" || card.first === target) && allowed.includes(cardStatus(card)); }); }
     function randomCard() { const cards = filteredCards(); if (!cards.length) return null; if (cards.length === 1) return cards[0]; let next = cards[Math.floor(Math.random() * cards.length)]; while (currentFlashCard && next.score === currentFlashCard.score) next = cards[Math.floor(Math.random() * cards.length)]; return next; }
-    function setAnswer(visible) { answerVisible = visible; firstDartAnswer.classList.toggle("hidden", !visible); checkoutAnswer.classList.toggle("hidden", !visible); revealFlash.textContent = visible ? "Hide" : "Reveal"; if (!currentFlashCard) return; if (visible) flashHint.textContent = "Swipe left for next, right for previous."; else if (flashMode.value === "multiple") flashHint.textContent = "Choose the first dart. Swipe left for next."; else flashHint.textContent = "Tap to reveal. Swipe left for next."; }
+    function setAnswer(visible) { answerVisible = visible; firstDartAnswer.classList.toggle("hidden", !visible); checkoutAnswer.classList.toggle("hidden", !visible); revealFlash.textContent = visible ? "Hide" : "Reveal"; if (!currentFlashCard) return; if (visible) flashHint.textContent = "Mark it, or swipe left for next."; else if (flashMode.value === "multiple") flashHint.textContent = "Choose the first dart. Swipe left for next."; else flashHint.textContent = "Tap to reveal. Swipe left for next."; }
     function updatePreviousButton() { const disabled = historyIndex <= 0; previousFlash.disabled = disabled; previousFlash.style.opacity = disabled ? ".55" : "1"; }
-    function showCard(card) { currentFlashCard = card; answeredChoice = false; if (!card) { flashScore.textContent = "No cards"; firstDartAnswer.textContent = ""; checkoutAnswer.textContent = ""; flashHint.textContent = "Change the filters to include some scores."; choices.hidden = true; revealFlash.disabled = true; renderList(); updateCount(); updatePreviousButton(); return; } revealFlash.disabled = false; flashScore.textContent = card.score; firstDartAnswer.textContent = formatSegment(card.first); checkoutAnswer.textContent = route(card); if (flashMode.value === "multiple") { choices.hidden = false; renderChoices(); } else { choices.hidden = true; choices.innerHTML = ""; } setAnswer(false); renderList(); updateCount(); updatePreviousButton(); }
+    function showCard(card) { currentFlashCard = card; answeredChoice = false; if (!card) { flashScore.textContent = "No cards"; firstDartAnswer.textContent = ""; checkoutAnswer.textContent = ""; flashHint.textContent = "Change the filters to include some scores."; choices.hidden = true; revealFlash.disabled = true; updateMasteryButtons(); renderList(); updateCount(); updatePreviousButton(); return; } revealFlash.disabled = false; flashScore.textContent = card.score; firstDartAnswer.textContent = formatSegment(card.first); checkoutAnswer.textContent = route(card); updateMasteryButtons(); if (flashMode.value === "multiple") { choices.hidden = false; renderChoices(); } else { choices.hidden = true; choices.innerHTML = ""; } setAnswer(false); renderList(); updateCount(); updatePreviousButton(); }
     function goNext() { const next = randomCard(); if (!next) { showCard(null); return; } if (historyIndex < history.length - 1) history = history.slice(0, historyIndex + 1); history.push(next); historyIndex = history.length - 1; showCard(next); }
     function goPrevious() { if (historyIndex <= 0) { flashHint.textContent = "No previous card yet."; updatePreviousButton(); return; } historyIndex -= 1; showCard(history[historyIndex]); }
     function resetDeck() { history = []; historyIndex = -1; currentFlashCard = null; goNext(); }
     function renderChoices() { choices.innerHTML = ""; const wrong = firstTargets().filter((target) => target !== currentFlashCard.first); shuffle([currentFlashCard.first, ...shuffle(wrong).slice(0, 3)]).forEach((option) => { const button = document.createElement("button"); button.type = "button"; button.className = "choice"; button.textContent = option; button.addEventListener("click", (event) => { event.stopPropagation(); handleChoice(button, option); }); choices.appendChild(button); }); }
-    function handleChoice(button, option) { if (answeredChoice) return; answeredChoice = true; const correct = option === currentFlashCard.first; if (correct) button.classList.add("correct"); else { button.classList.add("wrong"); Array.from(choices.children).forEach((choice) => { if (choice.textContent === currentFlashCard.first) choice.classList.add("correct"); }); } setAnswer(true); flashHint.textContent = correct ? "Correct. Swipe left for next." : `Answer: ${formatSegment(currentFlashCard.first)}. Swipe left for next.`; }
+    function handleChoice(button, option) { if (answeredChoice) return; answeredChoice = true; const correct = option === currentFlashCard.first; if (correct) button.classList.add("correct"); else { button.classList.add("wrong"); Array.from(choices.children).forEach((choice) => { if (choice.textContent === currentFlashCard.first) choice.classList.add("correct"); }); } setAnswer(true); flashHint.textContent = correct ? "Correct. Mark it or swipe left." : `Answer: ${formatSegment(currentFlashCard.first)}. Mark it or swipe left.`; }
     function updateCount() { const count = filteredCards().length, position = historyIndex >= 0 ? ` · Card ${historyIndex + 1} of ${history.length}` : ""; flashCount.textContent = `${count} card${count === 1 ? "" : "s"}${position}`; }
-    function renderList() { checkoutList.innerHTML = ""; filteredCards().sort((a, b) => b.score - a.score).forEach((card) => { const row = document.createElement("div"); row.className = "checkout-item"; row.innerHTML = `<span class="checkout-score">${card.score}</span><span class="checkout-route">${route(card)}</span>`; checkoutList.appendChild(row); }); }
+    function renderList() { checkoutList.innerHTML = ""; filteredCards().sort((a, b) => b.score - a.score).forEach((card) => { const row = document.createElement("div"); row.className = "checkout-item"; row.innerHTML = `<span class="checkout-score">${card.score} ${statusEmoji(cardStatus(card))}</span><span class="checkout-route">${route(card)}</span>`; checkoutList.appendChild(row); }); }
     function shuffle(array) { const copy = [...array]; for (let i = copy.length - 1; i > 0; i -= 1) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
     function isControl(element) { return Boolean(element.closest("button, select, input, summary, details")); }
     function swipeFeedback(direction) { const className = direction === "left" ? "swipe-left" : "swipe-right"; flashCard.classList.add(className); window.setTimeout(() => flashCard.classList.remove(className), 160); }
@@ -286,6 +311,8 @@
     scoreInput.addEventListener("input", () => { scoreInput.value = scoreInput.value.replace(/[^0-9]/g, ""); scoreNote.textContent = "Manual score"; renderBoard(); });
     randomButton.addEventListener("click", () => { const range = TARGET_RANGES.find((item) => item.label === rangeSelect.value) || TARGET_RANGES[0]; const randomScore = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min; setScore(randomScore, `Random ${range.label}`); });
     firstTargets().forEach((target) => { const option = document.createElement("option"); option.value = target; option.textContent = target; flashTarget.appendChild(option); });
+    masteryButtons.forEach((button) => button.addEventListener("click", (event) => { event.stopPropagation(); markCurrent(button.dataset.status); }));
+    statusFilters.forEach((box) => box.addEventListener("change", () => { if (!statusFilters.some((item) => item.checked)) box.checked = true; resetDeck(); }));
     flashCard.addEventListener("click", () => { if (skipTap) return; if (flashMode.value === "flash") setAnswer(!answerVisible); });
     flashCard.addEventListener("touchstart", onTouchStart, { passive: true });
     flashCard.addEventListener("touchend", onTouchEnd, { passive: true });
